@@ -1,0 +1,12 @@
+#MainContainer {
+
+}
+#footer_version {
+    font-size: 0.7em;
+    text-align: center;
+    color: #ffffff5c;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}

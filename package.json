@@ -1,0 +1,82 @@
+{
+    "description": "Aplicación para control biométrico de evaluaciones de la Universidad de Antioquia",
+    "author": "Elías De Vargas Cuéter / Juan Sebastian Guerrero C / Nestor Calvo Ariza",
+    "build": {
+        "appId": "co.edu.udea.evalvirtual"
+    },
+    "win": {
+        "icon": "./public/icons/png/notas.png"
+    },
+    "mac": {
+        "icon": "./public/icons/png/notas.png",
+        "category": "public.app-category.utilities"
+    },
+    "main": "public/electron.js",
+    "name": "evalvirtual-udea",
+    "productName": "EvalVirtualUdea",
+    "version": "1.2.7",
+    "private": true,
+    "homepage": "./",
+    "license": "MIT",
+    "dependencies": {
+        "@testing-library/jest-dom": "^4.2.4",
+        "@testing-library/react": "^9.5.0",
+        "@testing-library/user-event": "^7.2.1",
+        "electron-edge-js": "^12.18.5",
+        "electron-is-dev": "^1.2.0",
+        "eslint-plugin-react-hooks": "^4.1.0-rc.0",
+        "face-api.js": "^0.9.1",
+        "full-powershell": "1.4.0",
+        "jquery": "^3.5.1",
+        "node-powershell": "^4.0.0",
+        "node-powershellcore": "^1.0.0",
+        "powershell":"2.3.2",
+        "ps-list": "^7.2.0",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "react-icons": "^3.10.0",
+        "react-router-dom": "^5.2.0",
+        "react-scripts": "3.4.1",
+        "react-webcam": "^5.2.0",
+        "set-interval-async": "1.0.34",
+        "standard": "^14.3.4",
+        "styled-components": "^5.1.1",
+        "webcamjs": "^1.0.26"
+    },
+    "scripts": {
+        "react-start": "react-scripts start",
+        "react-build": "react-scripts build",
+        "react-test": "react-scripts test --env=jsdom",
+        "react-eject": "react-scripts eject",
+        "electron-build": "electron-builder --ia32",
+        "release": "yarn react-build && electron-builder --publish=always",
+        "build": "yarn react-build && yarn electron-build",
+        "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\""
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "concurrently": "^5.2.0",
+        "cross-env": "^7.0.2",
+        "electron": "^12.0.8",
+        "electron-builder": "^22.7.0",
+        "foreman": "^3.0.1",
+        "getpid": "0.0.1",
+        "wait-on": "^5.0.1"
+    },
+    "eslintConfig": {
+        "extends": [
+            "./node_modules/standard/eslintrc.json"
+        ]
+    }
+}
