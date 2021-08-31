@@ -1,6 +1,6 @@
 'use strict'
 const { RemoteSoftwareList } = require('./remotesoftwarelist.js')
-const PowerShell = require("powershell")
+const PowerShell = require('powershell')
 const { desktopCapturer } = require('electron')
 const { app, BrowserWindow, session, ipcMain, screen, net } = require('electron')
 const path = require('path')
@@ -33,7 +33,8 @@ let biometricWindow
 let quizWindow
 let warnWindow
 let confirmWindow
-let timer
+let timerSoftwareSupicious
+let timerExtraScreens
 
 // var clrMethod = edge.func('VirtualMachineDetection.dll')
 // console.log(clrMethod)
@@ -145,7 +146,8 @@ const createMainWindow = () => {
   // once is executed one time, on() is executed multiple times
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
-    timer = setIntervalAsync(checkRemoteSoftware, 1000)
+    timerSoftwareSupicious = setIntervalAsync(checkRemoteSoftware, 500)
+    timerExtraScreens = setIntervalAsync(verifyExternalDisplay, 500)
   })
   mainWindow.once('closed', () => onWindowsClose())
   // We can load a content in our window
@@ -223,7 +225,7 @@ const createQuizWindow = ({ urlQuiz, cookies, isMinimizable }) => {
     show: false,
     movable: false,
     frame: true,
-    minimizable: false,
+    minimizable: true,
     maximizable: false,
     closable: true,
     resizable: false,
@@ -267,8 +269,11 @@ const createQuizWindow = ({ urlQuiz, cookies, isMinimizable }) => {
 }
 
 const createWarnWindow = (state) => {
-  if (timer) {
-    clearIntervalAsync(timer)
+  if (timerSoftwareSupicious) {
+    clearIntervalAsync(timerSoftwareSupicious)
+  }
+  if (timerExtraScreens) {
+    clearIntervalAsync(timerExtraScreens)
   }
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   warnWindow = new BrowserWindow({
@@ -488,7 +493,7 @@ const getScreenInfo = () => {
   })
 }
 
-const verifyExternalDisplay = async () => {
+const verifyExternalDisplay = () => {
 
   const displays = screen.getAllDisplays()
   const externalDisplay = displays.find((display) => {
@@ -540,7 +545,6 @@ const verifyExternalDisplay = async () => {
 
   const psa = new PowerShell('Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams')
   psa.on('output', data => {
-    console.log(data)
     const split = data.split(' ')
     const obj = {}
     // contar que la palabra active no aparezca 2 veces
@@ -551,10 +555,10 @@ const verifyExternalDisplay = async () => {
         obj[split[i]]++
       }
     }
-    console.log(obj)
     global.screensDuplicated = obj
     if (obj['\r\n\r\nActive'] > 1) {
       global.externalDisplay = true
+      return true
     }
   })
   psa.on('err', err => {
