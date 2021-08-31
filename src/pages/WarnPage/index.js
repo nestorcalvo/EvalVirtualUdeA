@@ -9,35 +9,38 @@ export const WarnPage = () => {
   const { sendProcesses, getUserState } = useAuthActions()
   const { sendElectron, getElectronVar } = useElectronActions()
   // Tiempo para cerrar app
-  const [countdown, setCountdown] = useState(5)
+  const [countdown, setCountdown] = useState(10)
   const [intervalCountdown, setInvervalCountdown] = useState()
   const [title, setTitle] = useState()
   const [isWebcamSuspicious, setWebcamSuspicious] = useState(false)
   const [isExternalDisplay, setExternalDisplay] = useState(false)
   const [isRemoteSoftware, setRemoteSoftware] = useState(false)
   let usrstate = null
-  useEffect(async () => {
-    const externalDisplay = await getElectronVar('externalDisplay')
-    const webcamSuspicious = await getElectronVar('webcamSuspicious')
-    const remoteSoftware = await getElectronVar('remoteSoftware')
-    //const id = await getElectronVar('personId')
-    //usrstate = await getUserState(id)
-    //await sendProcesses({ identification: id, processes: remoteSoftware, webcamsus: webcamSuspicious, externaldisplay: externalDisplay }, true)
-    setRemoteSoftware(remoteSoftware)
-    if (webcamSuspicious) {
-      setTitle('SE HA ENCONTRADO ALGO MAL CON TU CÁMARA')
-    } else if (remoteSoftware) {
-      setTitle('SOFTWARE REMOTO DETECTADO')
-    } else if (externalDisplay) {
-      setTitle('PANTALLAS EXTERNAS DETECTADAS')
-    } else {
-      setTitle('OK')
+  useEffect(() => {
+    async function fetchData () {
+      const externalDisplay = await getElectronVar('externalDisplay')
+      const webcamSuspicious = await getElectronVar('webcamSuspicious')
+      const remoteSoftware = await getElectronVar('remoteSoftware')
+      //const id = await getElectronVar('personId')
+      //usrstate = await getUserState(id)
+      //await sendProcesses({ identification: id, processes: remoteSoftware, webcamsus: webcamSuspicious, externaldisplay: externalDisplay }, true)
+      setRemoteSoftware(remoteSoftware)
+      if (webcamSuspicious) {
+        setTitle('SE HA ENCONTRADO ALGO MAL CON TU CÁMARA')
+      } else if (remoteSoftware) {
+        setTitle('SOFTWARE REMOTO DETECTADO')
+      } else if (externalDisplay) {
+        setTitle('PANTALLAS EXTERNAS DETECTADAS')
+      } else {
+        setTitle('OK')
+      }
+      setInvervalCountdown(
+        setInterval(() => {
+          setCountdown(prevCount => prevCount - 1)
+        }, 1000))
+      return () => clearInterval(intervalCountdown)
     }
-    setInvervalCountdown(
-      setInterval(() => {
-        setCountdown(prevCount => prevCount - 1)
-      }, 1000))
-    return () => clearInterval(intervalCountdown)
+    fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   useEffect(() => {
