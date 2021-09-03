@@ -185,8 +185,8 @@ export const useElectronActions = (dispatch) => {
   }
   const cohortLogout = async (cohortId) => {
     const sessionId = window.localStorage.getItem(cohortId)
-    const headerAuth = await getTokenAuth()
-    await httpClient.put(`inscriptions/${cohortId}/sessions/${sessionId}`, {}, headerAuth)
+    // const headerAuth = await getTokenAuth()
+    // await httpClient.put(`inscriptions/${cohortId}/sessions/${sessionId}`)
     window.localStorage.removeItem(cohortId)
     redirectHome()
     dispatch({ type: AUTH_SET_ACTIVE_COHORT, payload: null })
@@ -194,8 +194,8 @@ export const useElectronActions = (dispatch) => {
   }
 
   const globalLogout = async () => {
-    const headerAuth = await getTokenAuth()
-    await httpClient.put('inscriptions/sessions', {}, headerAuth)
+    // const headerAuth = await getTokenAuth()
+    // await httpClient.put('inscriptions/sessions')
     window.localStorage.clear()
     dispatch({ type: AUTH_LOGOUT })
     dispatch({ type: BIO_LOGOUT })

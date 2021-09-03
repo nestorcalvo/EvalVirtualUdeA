@@ -53,10 +53,11 @@ export const HomePage = () => {
 
   return (
     <>
-      {loading && <MiniLoader />}
+      {/* {loading && <MiniLoader />}
       {!loading && user && !activeCohort && isBiometricallyRegistered
         ? fillCohortList()
-        : fillCohortList()}
+        : fillCohortList()} */}
+      {fillCohortList()}
       <table style={{ transform: 'translate(50%, -10%)' }}>
         <tr>
           <th>

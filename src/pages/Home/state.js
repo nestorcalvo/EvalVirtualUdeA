@@ -56,7 +56,7 @@ export const useHomeState = () => {
     const { callToLogin } = initialTrackingValues.current
     const token = window.localStorage.getItem(TOKEN)
     // If exists a token in localStorage we try to login, but first, we redirect to login page
-    if (!isAuth && token) {
+    if (!isAuth && token !== "null") {
       callToLogin()
     }
   }, [isAuth])

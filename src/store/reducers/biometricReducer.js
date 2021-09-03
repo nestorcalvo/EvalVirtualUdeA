@@ -24,7 +24,7 @@ export const initialState = {
 }
 
 export const biometricReducer = (state, action) => {
-  console.log('biometricState', { state, action })
+  // console.log('biometricState', { state, action })
   switch (action.type) {
     case BIO_TAKE_PHOTO:
       return { ...state, userImage: action.payload, error: null, loading: false }

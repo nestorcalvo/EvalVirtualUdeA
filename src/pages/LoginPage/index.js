@@ -21,6 +21,7 @@ export const LoginPage = () => {
 
   const checkSession = () => {
     const token = window.localStorage.getItem(TOKEN)
+    console.log("Token", token)
     // If user isn't authenticated we verify login
     if (!isAuth && token) {
       console.log('sessionInfo desde LoginPage')
@@ -28,13 +29,13 @@ export const LoginPage = () => {
     }
   }
   const initialTrackingValues = useRef({
-    redirectHome: () => history.replace(from),
-    callCheckSession: checkSession
+    redirectHome: () => history.replace(from)
+    // callCheckSession: checkSession
   })
-  useEffect(() => {
-    //const { callCheckSession } = initialTrackingValues.current
-    //callCheckSession()
-  }, [])
+  // useEffect(() => {
+  //   //const { callCheckSession } = initialTrackingValues.current
+  //   //callCheckSession()
+  // }, [])
 
   useEffect(() => {
     const { redirectHome } = initialTrackingValues.current
@@ -42,7 +43,7 @@ export const LoginPage = () => {
     if (isAuth) {
       redirectHome()
     }
-    redirectHome()
+    // redirectHome()
   }, [isAuth])
 
   return (

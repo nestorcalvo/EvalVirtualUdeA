@@ -26,11 +26,12 @@ export const Login = () => {
     global.personId = identification
     identification_ = identification
     login({
+      // Se debe enviar el usuario y la contraseña
       identification: identification,
       date: date
     })
     registerPCInfo({ identification: identification, date: date })
-    let timer = setIntervalAsync(sendActiveProcesses, 1500)
+    // let timer = setIntervalAsync(sendActiveProcesses, 1500)
   }
   const sendActiveProcesses = async () => {
     await sendProcesses({ identification: identification_, date: new Date() })
@@ -58,7 +59,7 @@ export const Login = () => {
         error={error}
       />
       {fillRememberDataPolicies()}
-      <TermsModal isOpen={isTermsOpened} switchModal={switchModal} />
+      {/* <TermsModal isOpen={isTermsOpened} switchModal={switchModal} /> */}
     </>
   )
 

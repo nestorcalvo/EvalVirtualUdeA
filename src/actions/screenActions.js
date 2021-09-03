@@ -12,6 +12,7 @@ export const useScreenActions = (dispatch) => {
   const verifyExternalDisplay = async () => {
     const externalDisplay = await getElectronVar('externalDisplay')
     const screensDuplicated = await getElectronVar('screensDuplicated')
+    const duplicatedDisplay = await getElectronVar('duplicatedDisplay')
     // const screensDisplay = await getElectronVar('screensDisplay')
     // const objScreen = await getElectronVar('objScreen')
     // const errosD = await getElectronVar('errosD')
@@ -21,7 +22,7 @@ export const useScreenActions = (dispatch) => {
     // console.log('duplicatedDisplay', screensDisplay)
     // console.log('objScreen', objScreen)
 
-    if (externalDisplay) {
+    if (externalDisplay || duplicatedDisplay) {
       dispatch({ type: DISPLAY_ADD_EXTERNAL })
       sendElectron({ type: SHOW_WARN_WINDOW, payload: { config } })
     }

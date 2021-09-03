@@ -16,7 +16,9 @@ const { constants } = require('fs')
 global.macInfo = null
 global.deviceInfo = null
 global.externalDisplay = false
+global.duplicatedDisplay = false
 global.objScreen = null
+global.remoteSoftwareFound = false
 global.screensDuplicated = 0
 global.oneScreenFounde = false
 global.screensDisplay = 0
@@ -26,6 +28,7 @@ global.remoteSoftware = false
 global.processList = false
 global.pcInfo = false
 global.personId = null
+global.ps = null
 
 global.sendURL = null
 let mainWindow
@@ -43,7 +46,7 @@ const AppReady = () => {
   registerPc()
   getDeviceInfo()
   getMarAddress()
-  getScreenInfo()
+  screenInit()
   createMainWindow()
   watchEvents()
 }
@@ -73,6 +76,7 @@ const watchEvents = (channel, listener) => {
     !warnWindow && createWarnWindow(state)
   })
   ipcMain.on(CLOSE_APP, (event, state) => {
+    clearIntervalAsync(timerExtraScreens)
     closeWarnWindow()
     onWindowsClose()
   })
@@ -146,8 +150,8 @@ const createMainWindow = () => {
   // once is executed one time, on() is executed multiple times
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
-    timerSoftwareSupicious = setIntervalAsync(checkRemoteSoftware, 500)
-    timerExtraScreens = setIntervalAsync(verifyExternalDisplay, 500)
+    timerSoftwareSupicious = setIntervalAsync(checkRemoteSoftware, 1000)
+    timerExtraScreens = setIntervalAsync(getScreenInfo, 2000)
   })
   mainWindow.once('closed', () => onWindowsClose())
   // We can load a content in our window
@@ -158,6 +162,9 @@ const createMainWindow = () => {
     ),
     protocol: 'file:',
     slashes: true
+  })
+  mainWindow.on('close', () => {
+    onWindowsClose()
   })
   mainWindow.loadURL(startUrl)
   // Open the DevTools.
@@ -225,7 +232,7 @@ const createQuizWindow = ({ urlQuiz, cookies, isMinimizable }) => {
     show: false,
     movable: false,
     frame: true,
-    minimizable: true,
+    minimizable: false,
     maximizable: false,
     closable: true,
     resizable: false,
@@ -272,9 +279,12 @@ const createWarnWindow = (state) => {
   if (timerSoftwareSupicious) {
     clearIntervalAsync(timerSoftwareSupicious)
   }
-  if (timerExtraScreens) {
-    clearIntervalAsync(timerExtraScreens)
-  }
+  // if (timerExtraScreens) {
+  //   clearIntervalAsync(timerExtraScreens)
+  // }
+  // if (timerExtraScreens) {
+  //   clearIntervalAsync(timerExtraScreens)
+  // }
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   warnWindow = new BrowserWindow({
     width,
@@ -302,7 +312,6 @@ const createWarnWindow = (state) => {
   warnWindow.webContents.send('payload', state)
   warnWindow.once('ready-to-show', () => warnWindow.show())
   warnWindow.once('closed', () => {
-    //closeWarnWindow()
     onWindowsClose()
     // if (global.externalDisplay) {
     //   if (mainWindow) {
@@ -433,20 +442,24 @@ const checkRemoteSoftware = async () => {
   const isRemoteSoftware = await verifyRemoteAccessSoftware(uniqueProcesses)
   global.processList = uniqueProcesses
   global.remoteSoftware = isRemoteSoftware
+  global.remoteSoftwareFound = isRemoteSoftware ? true : false
   if (global.personId) {
     const requestBody = {
       identification: global.personId,
-      processes: global.processList,
+      processes: global.remoteSoftware,
+      remoteSoftware:global.remoteSoftware,
       date: new Date()
     }
     //mainWindow.webContents.send('async', requestBody)
   }
   if (isRemoteSoftware) {
+    clearIntervalAsync(timerSoftwareSupicious)
     if (mainWindow) {
       mainWindow.webContents.send(ELECTRON_REMOTE_SOFTWARE_ACTIVATED, isRemoteSoftware)
-    }
-    if (quizWindow) {
+    } else if (quizWindow) {
       quizWindow.webContents.send(ELECTRON_REMOTE_SOFTWARE_ACTIVATED, isRemoteSoftware)
+    } else {
+      mainWindow.webContents.send(ELECTRON_REMOTE_SOFTWARE_ACTIVATED, isRemoteSoftware)
     }
     if (warnWindow) {
       warnWindow.close()
@@ -460,6 +473,7 @@ const verifyRemoteAccessSoftware = async (uniqueProcesses) => {
   const remoteSfwList = RemoteSoftwareList.map(word => word.toLowerCase())
   for (let i = 0; i < uniqueProcesses.length; i++) {
     if (remoteSfwList.includes(uniqueProcesses[i])) {
+      console.log(uniqueProcesses[i])
       susProcesses.push(uniqueProcesses[i])
     }
   }
@@ -470,11 +484,26 @@ const verifyRemoteAccessSoftware = async (uniqueProcesses) => {
   }
 }
 
-const getScreenInfo = () => {
-  console.log('Verificando Screen')
-  verifyExternalDisplay()
+const getScreenInfo = async () => {
+  // console.log('Verificando Screen')
+  // console.log("Revisando pantallas...")
+  // const isExternalDisplay = verifyExternalDisplay()
+  const respuesta = verifyExternalDisplay(global.ps)
+  if (respuesta) {
+    mainWindow.webContents.send(EXTERNAL_DISPLAY_REPLY, verifyExternalDisplay(global.ps))
+    clearIntervalAsync(timerExtraScreens)
+  }
+}
+const screenInit = () => {
+  global.ps = new Shell({
+    executionPolicy: 'Bypass',
+    noProfile: true
+  })
+  // global.ps.addCommand('Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams')
+
+  verifyExternalDisplay(global.ps)
   screen.on('display-removed', () => {
-    const isExternalDisplay = verifyExternalDisplay()
+    const isExternalDisplay = verifyExternalDisplay(global.ps)
     global.externalDisplay = isExternalDisplay
     mainWindow.webContents.send(EXTERNAL_DISPLAY_REPLY, isExternalDisplay)
     if (quizWindow) {
@@ -485,16 +514,16 @@ const getScreenInfo = () => {
       warnWindow.close()
       warnWindow = null
     }
+    clearIntervalAsync(timerExtraScreens)
   })
   screen.on('display-added', () => {
-    const isExternalDisplay = verifyExternalDisplay()
+    const isExternalDisplay = verifyExternalDisplay(global.ps)
     global.externalDisplay = isExternalDisplay
     mainWindow.webContents.send(EXTERNAL_DISPLAY_REPLY, isExternalDisplay)
   })
 }
 
-const verifyExternalDisplay = () => {
-
+const verifyExternalDisplay = (ps) => {
   const displays = screen.getAllDisplays()
   const externalDisplay = displays.find((display) => {
     return display.bounds.x !== 0 || display.bounds.y !== 0
@@ -503,49 +532,12 @@ const verifyExternalDisplay = () => {
     global.externalDisplay = true
     return true
   }
-  // const ps = new Shell({
-  //   executionPolicy: 'Bypass',
-  //   noProfile: true
-  // })
-  // // deteccion de pantalla
-  // // ps.addCommand('Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams')
-  // ps.addCommand('Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorBasicDisplayParams')
-  // ps.invoke().then(output => {
-  //   // global.objScreen = output
-  //   const split = output.split(' ')
-  //   const obj = {}
-  //   // contar que la palabra active no aparezca 2 veces
-  //   for (let i = 0; i < split.length; i++) {
-  //     if (obj[split[i]] === undefined) {
-  //       obj[split[i]] = 1
-  //     } else {
-  //       obj[split[i]]++
-  //     }
-  //   }
-  //   console.log(obj['\r\n\r\nActive'])
-  //   // global.screensDuplicated = obj['\r\n\r\nActive']
-  //   // if (obj['\r\n\r\nActive'] > 1) {
-  //   //   global.externalDisplay = true
-  //   // }
-  //   // else {
-  //   //   return false
-  //   // }
-  //   global.screensDuplicated = obj
-  //   if (obj['\r\n\r\nActive'] === 1) {
-  //     global.externalDisplay = false
-  //     global.oneScreenFounde = true
-  //   } else {
-  //     global.externalDisplay = true
-  //     global.oneScreenFounde = false
-  //     return true
-  //   }
-  // }).catch(err => {
-  //   console.log(err)
-  // })
 
-  const psa = new PowerShell('Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams')
-  psa.on('output', data => {
-    const split = data.split(' ')
+  // deteccion de pantalla
+  ps.addCommand('Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams')
+  ps.invoke().then(output => {
+    // global.objScreen = output
+    const split = output.split(' ')
     const obj = {}
     // contar que la palabra active no aparezca 2 veces
     for (let i = 0; i < split.length; i++) {
@@ -555,15 +547,21 @@ const verifyExternalDisplay = () => {
         obj[split[i]]++
       }
     }
-    global.screensDuplicated = obj
+    // console.log(obj['\r\n\r\nActive'])
     if (obj['\r\n\r\nActive'] > 1) {
+      global.duplicatedDisplay = true
       global.externalDisplay = true
       return true
     }
-  })
-  psa.on('err', err => {
+  }).catch(err => {
     console.log(err)
   })
+
+  if (global.duplicatedDisplay) {
+    return true
+  } else {
+    return false
+  }
   // if (global.oneScreenFounde === false) {
   //   console.log('Retorno default')
   //   global.screensDuplicated = 'Retorno default'
@@ -571,7 +569,17 @@ const verifyExternalDisplay = () => {
   //   return true
   // }
 }
-
+// setIntervalAsync(async () => {
+//   // await verifyExternalDisplay()
+//   const isExternalDisplay = await verifyExternalDisplay()
+//   if (global.externalDisplay || isExternalDisplay) {
+//     // global.externalDisplay = isExternalDisplay
+//     if (quizWindow) {
+//       quizWindow.webContents.send(EXTERNAL_DISPLAY_REPLY, isExternalDisplay)
+//     }
+//     mainWindow.webContents.send(EXTERNAL_DISPLAY_REPLY, isExternalDisplay)
+//   }
+// }, 1000)
 const closeBiometricWindow = () => {
   biometricWindow.closable = true
   biometricWindow.close()
@@ -622,6 +630,10 @@ app.on('activate', function () {
     createMainWindow()
   }
 })
-
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
 // listen on app ready
 app.on('ready', AppReady)

@@ -11,7 +11,7 @@ import {
 import * as faceapi from 'face-api.js'
 import { DataURIToBlob } from '../utils/base64ToBlob'
 import httpClient from '../httpClient/httpClient'
-import { URL_BIOMETRICS } from '../utils/constantes'
+// import { URL_BIOMETRICS } from '../utils/constantes'
 import { useElectronActions } from './electronActions'
 import { BIOMETRIC_PICTURE_TAKED } from './types/electronTypes'
 
@@ -70,53 +70,53 @@ export const useBiometricActions = ({ minConfidence, threshold, MODEL_URL = '/mo
     dispatch({ type: BIO_REGISTRATION_PHOTO_UPLOADED })
   }
 
-  const uploadRegistrationPhoto = async (imgBase64, id) => {
-    dispatch({ type: BIO_LOADING })
-    const file = await DataURIToBlob(imgBase64)
-    const data = new FormData()
-    data.append('images[]', file)
-    const url = `${URL_BIOMETRICS}/autenticar?id=${id}`
-    try {
-      const response = await httpClient.postPure(url, data, {})
-      if (response?.test_similarity > 0.8) {
-        dispatch({ type: BIO_REGISTRATION_PHOTO_UPLOADED })
-        sendElectron({ type: BIOMETRIC_PICTURE_TAKED, payload: response })
-        window.localStorage.setItem('isBiometricallyRegistered', '1')
-        window.localStorage.setItem('dni', id)
-        window.localStorage.setItem('localPhotoRegistered', imgBase64)
-      } else {
-        dispatch({ type: BIO_REGISTRATION_PHOTO_UPLOADED })
-        sendElectron({ type: BIOMETRIC_PICTURE_TAKED, payload: response })
-        window.localStorage.setItem('isBiometricallyRegistered', '1')
-        window.localStorage.setItem('dni', id)
-        window.localStorage.setItem('localPhotoRegistered', imgBase64)
-        /**
-        sendElectron({ type: REQUEST_STATE })
-        response.test_similarity < 0.8
-          ? dispatch({ type: BIO_ERROR, payload: 'No pudimos reconocerte, intenta de nuevo' })
-          : dispatch({ type: BIO_ERROR, payload: response.message ? response.message : 'Ocurrió un error al subir la foto' })
-      */
-         }
-    } catch (error) {
-      dispatch({ type: BIO_ERROR, payload: error.message ? error.message : 'Ocurrió un error al subir la foto' })
-    }
-  }
+  // const uploadRegistrationPhoto = async (imgBase64, id) => {
+  //   dispatch({ type: BIO_LOADING })
+  //   const file = await DataURIToBlob(imgBase64)
+  //   const data = new FormData()
+  //   data.append('images[]', file)
+  //   const url = `${URL_BIOMETRICS}/autenticar?id=${id}`
+  //   try {
+  //     const response = await httpClient.postPure(url, data, {})
+  //     if (response?.test_similarity > 0.8) {
+  //       dispatch({ type: BIO_REGISTRATION_PHOTO_UPLOADED })
+  //       sendElectron({ type: BIOMETRIC_PICTURE_TAKED, payload: response })
+  //       window.localStorage.setItem('isBiometricallyRegistered', '1')
+  //       window.localStorage.setItem('dni', id)
+  //       window.localStorage.setItem('localPhotoRegistered', imgBase64)
+  //     } else {
+  //       dispatch({ type: BIO_REGISTRATION_PHOTO_UPLOADED })
+  //       sendElectron({ type: BIOMETRIC_PICTURE_TAKED, payload: response })
+  //       window.localStorage.setItem('isBiometricallyRegistered', '1')
+  //       window.localStorage.setItem('dni', id)
+  //       window.localStorage.setItem('localPhotoRegistered', imgBase64)
+  //       /**
+  //       sendElectron({ type: REQUEST_STATE })
+  //       response.test_similarity < 0.8
+  //         ? dispatch({ type: BIO_ERROR, payload: 'No pudimos reconocerte, intenta de nuevo' })
+  //         : dispatch({ type: BIO_ERROR, payload: response.message ? response.message : 'Ocurrió un error al subir la foto' })
+  //     */
+  //        }
+  //   } catch (error) {
+  //     dispatch({ type: BIO_ERROR, payload: error.message ? error.message : 'Ocurrió un error al subir la foto' })
+  //   }
+  // }
 
-  const uploadExamPhoto = async (registrationImgBase64, imgBase64, id) => {
-    const localPhotoRegistered = await window.localStorage.getItem('localPhotoRegistered')
-    const file = await DataURIToBlob(imgBase64)
-    const fileRegistration = await DataURIToBlob(registrationImgBase64 ? registrationImgBase64 : localPhotoRegistered)
-    const data = new FormData()
-    data.append('images[]', file)
-    data.append('images[]', fileRegistration)
+  // const uploadExamPhoto = async (registrationImgBase64, imgBase64, id) => {
+  //   const localPhotoRegistered = await window.localStorage.getItem('localPhotoRegistered')
+  //   const file = await DataURIToBlob(imgBase64)
+  //   const fileRegistration = await DataURIToBlob(registrationImgBase64 ? registrationImgBase64 : localPhotoRegistered)
+  //   const data = new FormData()
+  //   data.append('images[]', file)
+  //   data.append('images[]', fileRegistration)
 
-    const url = `${URL_BIOMETRICS}/verificar?id=${id}`
-    try {
-      await httpClient.postPure(url, data, {})
-    } catch (error) {
-      dispatch({ type: BIO_ERROR, payload: 'Ocurrió un error al subir la foto' })
-    }
-  }
+  //   const url = `${URL_BIOMETRICS}/verificar?id=${id}`
+  //   try {
+  //     await httpClient.postPure(url, data, {})
+  //   } catch (error) {
+  //     dispatch({ type: BIO_ERROR, payload: 'Ocurrió un error al subir la foto' })
+  //   }
+  // }
 
   const setImg = async (img) => {
     dispatch({ type: BIO_TAKE_PHOTO, payload: img })
@@ -139,8 +139,8 @@ export const useBiometricActions = ({ minConfidence, threshold, MODEL_URL = '/mo
     verifyFace,
     getWebcamInfo,
     checkWebCam,
-    uploadRegistrationPhoto,
-    uploadExamPhoto,
+    // uploadRegistrationPhoto,
+    // uploadExamPhoto,
     notifyPhotoUploaded,
     clearError
   }

@@ -13,6 +13,7 @@ export const useCohortState = ({match}) => {
   const { getElectronVar } = useElectronActions(dispatch)
   const [isQuizOpened, setIsQuizOpened] = useState(false)
   const checkLoginCohort = () => {
+    console.log('checkLoginCohort')
     const cohortId = match?.params?.cohortId
     if (!activeCohort && !error && cohortId && cohorts?.length > 0) {
       loginCohort(cohortId)
@@ -20,19 +21,18 @@ export const useCohortState = ({match}) => {
   }
   const checkSessionInfo = () => {
     // TODO realmente esto es últil
-    console.log()
+    console.log('Cohorte chekeado')
     if (cohorts?.length === 0 && !user) {
-      console.log('sessionInfo desde CohortPage')
+      // console.log('sessionInfo desde CohortPage')
       getSessionInfo()
     }
   }
 
   const handleOpenQuiz = async () => {
     setIsQuizOpened(true)
-    const currentDate = new Date()
     const id = await getElectronVar('personId')
     console.log(id)
-    registerExamStarted({ identification: id, date: currentDate })
+    registerExamStarted({ identification: id})
     openQuiz(EXAM_URL)
   }
 
@@ -92,13 +92,15 @@ export const useCohortState = ({match}) => {
   }
   const initialTrackingValues = useRef({
     callCheckSettingsExam: checkSettingsExam,
-    callCheckLoginCohort: checkLoginCohort,
-    callCheckSessionInfo: checkSessionInfo
+    callCheckLoginCohort: checkLoginCohort
+    // callCheckSessionInfo: checkSessionInfo
   })
 
   useEffect(() => {
-    const { callCheckLoginCohort, callCheckSessionInfo } = initialTrackingValues.current
-    callCheckSessionInfo()
+    // const { callCheckLoginCohort, callCheckSessionInfo } = initialTrackingValues.current
+    // callCheckSessionInfo()
+    // callCheckLoginCohort()
+    const { callCheckLoginCohort} = initialTrackingValues.current
     callCheckLoginCohort()
   }, [])
 

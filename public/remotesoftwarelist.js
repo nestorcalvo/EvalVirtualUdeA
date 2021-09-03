@@ -5,7 +5,7 @@ module.exports = {
     'CloudBerry Remote Assistant',
     'chrome',
     // 'firefox',
-    'microsoftedge',
+    'msedge',
     'edge',
     'safari',
     'opera',
@@ -78,6 +78,5 @@ module.exports = {
     'DNTU',
     'RDMA',
     'embedded'
-
   ]
 }
