@@ -3,6 +3,7 @@
 name: generar ejecutables
 env:
   CI: ""
+  GH_TOKEN: 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
 
 # Controls when the workflow will run
 on:
