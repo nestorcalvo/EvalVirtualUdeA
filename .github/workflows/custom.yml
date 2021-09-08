@@ -2,6 +2,10 @@ name: Build/releasel
 
 on: push
 
+env:
+  CI: ""
+  GH_TOKEN: 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
+  
 jobs:
   release:
     runs-on: ${{ matrix.os }}
