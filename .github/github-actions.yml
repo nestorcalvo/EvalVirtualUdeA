@@ -1,0 +1,17 @@
+name: generar distribuciones
+on:
+    push:
+        branches:
+            - no-powershell
+jobs:
+    EXEC-LINUX:
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "Iniciando flujo de generacion LINUX"
+            -   uses: actions/checkout@v2
+            -   uses: actions/setup-node@v2
+                with:
+                    node-version: '14'
+            - run: yarn install
+            - run: yarn build --linux --x64
+            - run: echo "Status is ${{ job.status }}."
