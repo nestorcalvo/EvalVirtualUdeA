@@ -1,4 +1,4 @@
-name: Build/releasel
+name: Build/release
 
 on: 
   push:
@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
