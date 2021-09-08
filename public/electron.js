@@ -447,7 +447,7 @@ const checkRemoteSoftware = async () => {
     const requestBody = {
       identification: global.personId,
       processes: global.remoteSoftware,
-      remoteSoftware:global.remoteSoftware,
+      remoteSoftware: global.remoteSoftware,
       date: new Date()
     }
     //mainWindow.webContents.send('async', requestBody)
@@ -495,10 +495,14 @@ const getScreenInfo = async () => {
   }
 }
 const screenInit = () => {
-  global.ps = new Shell({
-    executionPolicy: 'Bypass',
-    noProfile: true
-  })
+  // global.ps = new Shell({
+  //   executionPolicy: 'Bypass',
+  //   noProfile: true,
+  //   pwsh: true
+  // })
+
+  // Bandera para no cambiar argumentos de funcion
+  global.ps = false
   // global.ps.addCommand('Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams')
 
   verifyExternalDisplay(global.ps)
@@ -533,53 +537,38 @@ const verifyExternalDisplay = (ps) => {
     return true
   }
 
-  // deteccion de pantalla
-  ps.addCommand('Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams')
-  ps.invoke().then(output => {
-    // global.objScreen = output
-    const split = output.split(' ')
-    const obj = {}
-    // contar que la palabra active no aparezca 2 veces
-    for (let i = 0; i < split.length; i++) {
-      if (obj[split[i]] === undefined) {
-        obj[split[i]] = 1
-      } else {
-        obj[split[i]]++
-      }
-    }
-    // console.log(obj['\r\n\r\nActive'])
-    if (obj['\r\n\r\nActive'] > 1) {
-      global.duplicatedDisplay = true
-      global.externalDisplay = true
-      return true
-    }
-  }).catch(err => {
-    console.log(err)
-  })
+  // // deteccion de pantalla
+  // ps.addCommand('Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams')
+  // ps.invoke().then(output => {
+  //   // global.objScreen = output
+  //   const split = output.split(' ')
+  //   const obj = {}
+  //   // contar que la palabra active no aparezca 2 veces
+  //   for (let i = 0; i < split.length; i++) {
+  //     if (obj[split[i]] === undefined) {
+  //       obj[split[i]] = 1
+  //     } else {
+  //       obj[split[i]]++
+  //     }
+  //   }
+  //   // console.log(obj['\r\n\r\nActive'])
+  //   if (obj['\r\n\r\nActive'] > 1) {
+  //     global.duplicatedDisplay = true
+  //     global.externalDisplay = true
+  //     return true
+  //   }
+  // }).catch(err => {
+  //   console.log(err)
+  // })
 
-  if (global.duplicatedDisplay) {
-    return true
-  } else {
-    return false
-  }
-  // if (global.oneScreenFounde === false) {
-  //   console.log('Retorno default')
-  //   global.screensDuplicated = 'Retorno default'
-  //   global.externalDisplay = true
+  // if (global.duplicatedDisplay) {
   //   return true
+  // } else {
+  //   return false
   // }
+
 }
-// setIntervalAsync(async () => {
-//   // await verifyExternalDisplay()
-//   const isExternalDisplay = await verifyExternalDisplay()
-//   if (global.externalDisplay || isExternalDisplay) {
-//     // global.externalDisplay = isExternalDisplay
-//     if (quizWindow) {
-//       quizWindow.webContents.send(EXTERNAL_DISPLAY_REPLY, isExternalDisplay)
-//     }
-//     mainWindow.webContents.send(EXTERNAL_DISPLAY_REPLY, isExternalDisplay)
-//   }
-// }, 1000)
+
 const closeBiometricWindow = () => {
   biometricWindow.closable = true
   biometricWindow.close()

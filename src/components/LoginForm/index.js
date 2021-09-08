@@ -23,14 +23,14 @@ export const LoginForm = ({ onSubmit, title, error, loading }) => {
   })
 
   const verifyForm = async (e) => {
-    console.log("Verify Form", e)
     e.preventDefault()
-    onSubmit({
-      identification: identification.value
-    })
-    // axios.get('https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog/health').then(function (response) {
-    //   console.log(response)
-    // })
+    if (identification.value === '') {
+      fillError()
+    } else {
+      onSubmit({
+        identification: identification.value
+      })
+    }
   }
 
   const fillError = () => {
