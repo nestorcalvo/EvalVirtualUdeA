@@ -1,4 +1,4 @@
-export const VERSION = 'v1.2.9'
+export const VERSION = 'v1.3.0'
 // COMMON URL
 // export const URL_BIOMETRICS = 'https://api.ingeniaudea.co/evalvirtual/webapi'
 // export const URL_BIOMETRICS = 'http://arquimedes.udea.edu.co:8098'
