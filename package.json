@@ -5,7 +5,8 @@
         "appId": "co.edu.udea.evalvirtual"
     },
     "win": {
-        "icon": "./public/icons/png/notas.png"
+        "icon": "./public/icons/png/notas.png",
+        "requestedExecutionLevel": "requireAdministrator"
     },
     "mac": {
         "icon": "./public/icons/png/notas.png",
@@ -27,6 +28,7 @@
         "electron-is-dev": "^1.2.0",
         "eslint-plugin-react-hooks": "^4.1.0-rc.0",
         "face-api.js": "^0.9.1",
+        "form-data": "^4.0.0",
         "full-powershell": "1.4.0",
         "jquery": "^3.5.1",
         "node-powershell": "^4.0.0",
@@ -42,6 +44,8 @@
         "set-interval-async": "1.0.34",
         "standard": "^14.3.4",
         "styled-components": "^5.1.1",
+        "tmp": "^0.2.1",
+        "tmp-promise": "^3.0.2",
         "webcamjs": "^1.0.26"
     },
     "scripts": {
