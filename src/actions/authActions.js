@@ -10,11 +10,18 @@ import {
   AUTH_SET_MAC,
   AUTH_SET_USER
 } from './types/authTypes'
-import { TOKEN } from '../utils/constantes'
+
+import { TOKEN, BACK_URL } from '../utils/constantes'
 import { useElectronActions } from './electronActions'
-import { ASK_STATE_REPLY, NOTIFY_NO_ACTIVE_COHORT, SET_PERSON_ID, SHOW_BIOMETRIC_WINDOW } from './types/electronTypes'
+import { ASK_STATE_REPLY, NOTIFY_NO_ACTIVE_COHORT, SET_PERSON_ID, SHOW_BIOMETRIC_WINDOW, REQUEST_STATE } from './types/electronTypes'
 import { useStore } from '../store/storeContext'
 import axios from 'axios'
+import path from 'path'
+const fs = require('fs')
+const Buffer = require('buffer').Buffer
+const FormData = require('form-data')
+// import fs from 'fs'
+// import util from 'util'
 // import { getCurrentCity } from '../utils/location'
 
 export const useAuthActions = (dispatch) => {
@@ -39,26 +46,29 @@ export const useAuthActions = (dispatch) => {
     dispatch({ type: AUTH_LOADING })
     // const headerAuth = await getTokenAuth()
     // console.log('Token', headerAuth)
-    dispatch({
-      type: AUTH_LOGIN,
-      payload: loginInfo.identification
-    })
-    getSessionInfo()
-    // await axios.post('https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog/login', loginInfo)
-    //   .then((response) => {
-    //     dispatch({
-    //       type: AUTH_LOGIN,
-    //       payload: loginInfo.identification
-    //     })
-    //     console.log('Usuario registrado con exito, respuesta: ', response)
-    //     getSessionInfo()
-    //   })
-    //   .catch((error) => {
-    //     sendLogoutState()
-    //     console.log(error)
-    //   })
 
-    sendElectron({ type: SET_PERSON_ID, payload: loginInfo.identification })
+    await axios.post(
+      path.join(BACK_URL, 'login'),
+      loginInfo
+    )
+      .then((response) => {
+        console.log(response)
+        dispatch({
+          type: AUTH_LOGIN,
+          payload: response.data.token
+        })
+        console.log('Token usuario', response.data.token)
+        getSessionInfo()
+        registerPCInfo({ identification: response.data.token, date: new Date() })
+        sendElectron({ type: SET_PERSON_ID, payload: response.data.token })
+        return response.data.token
+      })
+      .catch((error) => {
+        dispatch({ type: AUTH_ERROR, payload: error.message })
+        sendLogoutState()
+        console.log(error)
+        return error
+      })
   }
   const sendProcesses = async (Info, flags = false) => {
     console.log('Proceso a enviar')
@@ -70,8 +80,6 @@ export const useAuthActions = (dispatch) => {
       if (flags) {
         // await httpClient.post('sus', Info, null)
         // All process
-
-
         // await axios.post('https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog/suspect', Info).then((response) => {
         //   console.log('sendProcesses', response)
         // })
@@ -136,22 +144,27 @@ export const useAuthActions = (dispatch) => {
       externaldisplay: false,
       description: descriptionPost
     }
-    // await axios.post('https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog/startexam', body).then(function (response) {
-    //   console.log('Inicio examen', response)
-    // })
-    //   .catch((error) => {
-    //     console.log('Error registerExamStarted', error)
-    //   })
-    // try {
-    //   await httpClient.post('startexam', Info, null)
-    // } catch (error) {
-    //   console.log('ERROR AUTH: ', error)
-    //   setError('No se pudo conectar con el servidor')
-    // }
+    await axios.post(
+      path.join(BACK_URL, 'startexam'),
+      body
+    )
+      .then(function (response) {
+        console.log('Inicio examen', response)
+      })
+      .catch((error) => {
+        console.log('Error registerExamStarted', error)
+        setError('No se pudo conectar con el servidor')
+      })
   }
 
   const registerPCInfo = async (Info) => {
     const pcinfo = await getElectronVar('pcInfo')
+    const infoFile = await getElectronVar('fileInfo')
+    console.log(infoFile)
+
+    // const buf = new Buffer.from(infoFile, 'base64')
+    // const buf = Buffer.from(JSON.stringify(pcinfo)).toString('base64')
+    // console.log("buffer",buf)
     // Revisar que quiere en la descripcion aqui
     const body = {
       identification: Info.identification,
@@ -160,20 +173,22 @@ export const useAuthActions = (dispatch) => {
       processes_list: [],
       webcamsus: false,
       externaldisplay: false,
-      description: pcinfo
+      description: 'ga',
+      file: infoFile
     }
+    // sendElectron({ type: REQUEST_STATE, payload: body})
+    await axios.post(
+      path.join(BACK_URL, 'gatherInfo'),
+      body
+    )
+      .then(function (response) {
+        console.log('Informacion enviada', response)
+      })
+      .catch((error) => {
+        console.log('Error registerPCInfo', error)
+        setError('No se pudo conectar con el servidor')
+      })
     // const response = await httpClient.post('gatherInfo', body, null)
-    // await axios.post('https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog/gatherInfo', body).then((response) => {
-    //   console.log('PC info registered', response)
-    // })
-    //   .catch((error) => {
-    //     console.log('Error registerPCInfo', error)
-    //   })
-    // try {
-    // } catch (error) {
-    //   console.log('ERROR AUTH: ', error)
-    //   setError('No se pudo conectar con el servidor')
-    // }
   }
 
   const getSessionInfo = async () => {

@@ -11,27 +11,28 @@ const ipcRenderer = window.require('electron').ipcRenderer
 
 export const Login = () => {
   let identification_ = null
+  let password_ = null
   const {
-    state: { auth: { loading, error } },
+    state: { auth: { loading, error} },
     dispatch
   } = useStore()
 
-  const { login, registerPCInfo, sendProcesses, sendQuit } = useAuthActions(dispatch)
+  const { login, sendProcesses, sendQuit } = useAuthActions(dispatch)
   const [isTermsOpened, setIsTermsOpened] = useState(false)
   const { sendElectron } = useElectronActions(dispatch)
   const handleSubmit = (dataForm) => {
     const identification = dataForm.identification
     const date = new Date()
+    const password = dataForm.password
+
     sendElectron({ type: SET_PERSON_ID, response: identification })
-    global.personId = identification
-    identification_ = identification
+
     login({
       // Se debe enviar el usuario y la contraseña
       identification: identification,
+      password: password,
       date: date
     })
-    registerPCInfo({ identification: identification, date: date })
-    // let timer = setIntervalAsync(sendActiveProcesses, 1500)
   }
   const sendActiveProcesses = async () => {
     await sendProcesses({ identification: identification_, date: new Date() })

@@ -12,7 +12,8 @@ const { setIntervalAsync, clearIntervalAsync } = require('set-interval-async/dyn
 const psList = require('ps-list')
 const isDev = require('electron-is-dev')
 const { SEND_SOFTWARE_LIST_TO_MW, ELECTRON_SEND_SOFTWARE_LIST, QUIZ_WINDOW_SET_MINIMIZABLE, SET_PERSON_ID, SET_BACK_URL, NOTIFY_NO_ACTIVE_COHORT_REPLY, NOTIFY_NO_ACTIVE_COHORT, NOTIFY_LOGIN, CONFIRM_WINDOW_ACCEPT, CONFIRM_WINDOW_SET_STATE, CONFIRM_WINDOW_ACCEPT_REPLY, CONFIRM_WINDOW_SHOW, SHOW_BIOMETRIC_WINDOW_REPLY, ASK_STATE_REPLY, REQUEST_STATE, QUIZ_WINDOW_IS_OPENED_REPLY, NOTIFY_LOGIN_REPLY, BIOMETRIC_PICTURE_TAKED, SHOW_WARN_WINDOW, LOGOUT_REPLY, BIOMETRIC_PICTURE_TAKED_REPLY, CAN_START_QUIZ, CAN_START_QUIZ_REPLY, LOGOUT, SHOW_QUIZ_WINDOW, CLOSE_APP, SHOW_BIOMETRIC_WINDOW, NOTIFY_WEBCAM_SUSPICIOUS, EXTERNAL_DISPLAY_REPLY, ASK_STATE, REQUEST_STATE_REPLY, CONFIRM_WINDOW_CANCEL, ELECTRON_REMOTE_SOFTWARE_ACTIVATED } = require('./electronTypes')
-const { constants } = require('fs')
+const fs = require('fs')
+const tmp = require('tmp')
 global.macInfo = null
 global.deviceInfo = null
 global.externalDisplay = false
@@ -29,6 +30,7 @@ global.processList = false
 global.pcInfo = false
 global.personId = null
 global.ps = null
+global.fileInfo = null
 
 global.sendURL = null
 let mainWindow
@@ -406,6 +408,9 @@ const getDeviceInfo = () => {
     cpus: cpu
   }
   global.deviceInfo = deviceInfo
+
+  // global.fileInfo = Buffer.from(JSON.stringify(deviceInfo)).toString('base64')
+
   if (os.type() === 'Darwin') {
     checkCamera()
   }
@@ -429,6 +434,8 @@ const registerPc = () => {
     kernel: os.version(),
     freemem: os.freemem()
   }
+  global.fileInfo = Buffer.from(JSON.stringify(global.pcInfo)).toString('base64')
+  console.log(typeof (global.fileInfo))
 }
 
 const checkRemoteSoftware = async () => {
