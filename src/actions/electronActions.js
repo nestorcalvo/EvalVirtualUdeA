@@ -12,7 +12,7 @@ import {
   ASK_STATE,
   ASK_STATE_REPLY,
   REQUEST_STATE_REPLY,
-  CONFIRM_WINDOW_SET_STATE, REQUEST_STATE, NOTIFY_NO_ACTIVE_COHORT_REPLY, NOTIFY_NO_ACTIVE_COHORT
+  CONFIRM_WINDOW_SET_STATE, REQUEST_STATE, NOTIFY_NO_ACTIVE_COHORT_REPLY, NOTIFY_NO_ACTIVE_COHORT,
 } from './types/electronTypes'
 import {
   AUTH_CAN_START_QUIZ,
@@ -26,6 +26,7 @@ import { CONFIRM_WINDOW_INIT_STATE } from './types/confirmWindowTypes'
 import { useStore } from '../store/storeContext'
 import httpClient, { getTokenAuth } from '../httpClient/httpClient'
 import { useRedirect } from '../hooks/useRedirect'
+import axios from 'axios'
 
 export const useElectronActions = (dispatch) => {
   const {

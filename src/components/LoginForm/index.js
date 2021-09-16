@@ -4,6 +4,7 @@ import { useInputValue } from '../Forms/Input/useInputValue'
 import { Input } from '../Forms/Input'
 import { LoginError, FormWrapper, LoginButton, Title, LoadingMessage } from './styles'
 import httpClient from '../../httpClient/httpClient'
+
 import axios from 'axios'
 
 export const LoginForm = ({ onSubmit, title, error, loading }) => {
@@ -13,12 +14,13 @@ export const LoginForm = ({ onSubmit, title, error, loading }) => {
     value: '',
     name: 'password',
     type: 'password',
-    placeholder: 'Ingrese su contraseña'
+    placeholder: 'Ingrese su contraseña',
+    inputmode: "numeric"
   })
   const identification = useInputValue({
     value: '',
     name: 'identificacion',
-    type: 'text',
+    type: 'number',
     placeholder: 'Ingrese su usuario'
   })
 
@@ -30,6 +32,7 @@ export const LoginForm = ({ onSubmit, title, error, loading }) => {
       onSubmit({
         identification: identification.value,
         password: password.value
+
       })
     }
   }

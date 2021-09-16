@@ -2,11 +2,10 @@ import React, { useState } from 'react'
 import { LoginForm } from '../LoginForm'
 import { useStore } from '../../store/storeContext'
 import { useAuthActions } from '../../actions/authActions'
-import { TermsModal } from '../TermsModal'
 import { RememberDataPoliciesContent, RememberDataPoliciesWrapper } from './styles'
 import { SET_PERSON_ID } from '../../actions/types/electronTypes'
 import { useElectronActions } from '../../actions/electronActions'
-import { setIntervalAsync } from 'set-interval-async/dynamic'
+import { COHORT_NUMBER } from '../../utils/constantes'
 const ipcRenderer = window.require('electron').ipcRenderer
 
 export const Login = () => {
@@ -22,16 +21,17 @@ export const Login = () => {
   const { sendElectron } = useElectronActions(dispatch)
   const handleSubmit = (dataForm) => {
     const identification = dataForm.identification
-    const date = new Date()
+    // const date = new Date()
     const password = dataForm.password
 
     sendElectron({ type: SET_PERSON_ID, response: identification })
-
+    console.log("Intento de inicio de sesión")
     login({
       // Se debe enviar el usuario y la contraseña
       identification: identification,
       password: password,
-      date: date
+      // date: date,
+      id_admission: String(COHORT_NUMBER)
     })
   }
   const sendActiveProcesses = async () => {
