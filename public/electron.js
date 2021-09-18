@@ -136,15 +136,6 @@ const watchEvents = (channel, listener) => {
   })
 }
 const sendInformation = (data, closeFlag = false) => {
-  // const test = {
-  //   "identification": "QWEASDZXC",
-  //   "type_log": 0,
-  //   "remoteControl": false,
-  //   "externalDevices": false,
-  //   "externalScreen": true,
-  //   "description": "Camara",
-  //   "information": "eyJhcmNoIjoieDY0IiwicHJvY2Vzc29yIjpbeyJtb2RlbCI6IkFNRCBSeXplbiA1IDI1MDBVIHdpdGggUmFkZW9uIFZlZ2EgTW9iaWxlIEdmeCAgIiwic3BlZWQiOjE5OTYsInRpbWVzIjp7InVzZXIiOjM0MTAyMTI1LCJuaWNlIjowLCJzeXMiOjI0MjkzNTE1LCJpZGxlIjoyNTA2MzgwNjIsImlycSI6MTgxNTUzMX19LHsibW9kZWwiOiJBTUQgUnl6ZW4gNSAyNTAwVSB3aXRoIFJhZGVvbiBWZWdhIE1vYmlsZSBHZnggICIsInNwZWVkIjoxOTk2LCJ0aW1lcyI6eyJ1c2VyIjoyODc1MDc2NSwibmljZSI6MCwic3lzIjoxMzgwNDUxNSwiaWRsZSI6MjY2NDc4MTcxLCJpcnEiOjExMzUxMDl9fSx7Im1vZGVsIjoiQU1EIFJ5emVuIDUgMjUwMFUgd2l0aCBSYWRlb24gVmVnYSBNb2JpbGUgR2Z4ICAiLCJzcGVlZCI6MTk5NiwidGltZXMiOnsidXNlciI6NDU5ODQxMDksIm5pY2UiOjAsInN5cyI6MTU4NTI3MTgsImlkbGUiOjI0NzE5NjYyNSwiaXJxIjozNTExNDB9fSx7Im1vZGVsIjoiQU1EIFJ5emVuIDUgMjUwMFUgd2l0aCBSYWRlb24gVmVnYSBNb2JpbGUgR2Z4ICAiLCJzcGVlZCI6MTk5NiwidGltZXMiOnsidXNlciI6MzM0NTY2NDAsIm5pY2UiOjAsInN5cyI6MTAxMTQ3NjUsImlkbGUiOjI2NTQ2MjA0NiwiaXJxIjoyMDg4OTB9fSx7Im1vZGVsIjoiQU1EIFJ5emVuIDUgMjUwMFUgd2l0aCBSYWRlb24gVmVnYSBNb2JpbGUgR2Z4ICAiLCJzcGVlZCI6MTk5NiwidGltZXMiOnsidXNlciI6MzY5NjI4MTIsIm5pY2UiOjAsInN5cyI6MTU3ODQ0NjgsImlkbGUiOjI1NjI4NjE3MSwiaXJxIjoyOTAyMDN9fSx7Im1vZGVsIjoiQU1EIFJ5emVuIDUgMjUwMFUgd2l0aCBSYWRlb24gVmVnYSBNb2JpbGUgR2Z4ICAiLCJzcGVlZCI6MTk5NiwidGltZXMiOnsidXNlciI6MjY1MDUxODcsIm5pY2UiOjAsInN5cyI6OTg5NTYwOSwiaWRsZSI6MjcyNjMyNjU2LCJpcnEiOjE3NDkwNn19LHsibW9kZWwiOiJBTUQgUnl6ZW4gNSAyNTAwVSB3aXRoIFJhZGVvbiBWZWdhIE1vYmlsZSBHZnggICIsInNwZWVkIjoxOTk2LCJ0aW1lcyI6eyJ1c2VyIjozNDY0Njk4NCwibmljZSI6MCwic3lzIjoxNDAxODUxNSwiaWRsZSI6MjYwMzY3OTUzLCJpcnEiOjIzNjAzMX19LHsibW9kZWwiOiJBTUQgUnl6ZW4gNSAyNTAwVSB3aXRoIFJhZGVvbiBWZWdhIE1vYmlsZSBHZnggICIsInNwZWVkIjoxOTk2LCJ0aW1lcyI6eyJ1c2VyIjozMDIxOTE4NywibmljZSI6MCwic3lzIjoxMTM4Njg1OSwiaWRsZSI6MjY3NDI3NDA2LCJpcnEiOjE2ODUwMH19XSwicmFtIjoxNjAwMTg3NTk2OCwibmFtZSI6IkRFU0tUT1AtUlRRRDRWOCIsIm5ldHdvcmtJbnRlcmZhY2VzIjp7IlZpcnR1YWxCb3ggSG9zdC1Pbmx5IE5ldHdvcmsiOlt7ImFkZHJlc3MiOiJmZTgwOjozNDkzOmQ3ZTI6N2VlMjpmY2I0IiwibmV0bWFzayI6ImZmZmY6ZmZmZjpmZmZmOmZmZmY6OiIsImZhbWlseSI6IklQdjYiLCJtYWMiOiIwYTowMDoyNzowMDowMDo0NSIsImludGVybmFsIjpmYWxzZSwiY2lkciI6ImZlODA6OjM0OTM6ZDdlMjo3ZWUyOmZjYjQvNjQiLCJzY29wZWlkIjo2OX0seyJhZGRyZXNzIjoiMTkyLjE2OC41Ni4xIiwibmV0bWFzayI6IjI1NS4yNTUuMjU1LjAiLCJmYW1pbHkiOiJJUHY0IiwibWFjIjoiMGE6MDA6Mjc6MDA6MDA6NDUiLCJpbnRlcm5hbCI6ZmFsc2UsImNpZHIiOiIxOTIuMTY4LjU2LjEvMjQifV0sIldpLUZpIDIiOlt7ImFkZHJlc3MiOiJmZTgwOjo1NTI3OjY2MTQ6NjU5MDo1Yzc5IiwibmV0bWFzayI6ImZmZmY6ZmZmZjpmZmZmOmZmZmY6OiIsImZhbWlseSI6IklQdjYiLCJtYWMiOiIxMDpmZTplZDoxNDpjMDozMSIsImludGVybmFsIjpmYWxzZSwiY2lkciI6ImZlODA6OjU1Mjc6NjYxNDo2NTkwOjVjNzkvNjQiLCJzY29wZWlkIjoxMn0seyJhZGRyZXNzIjoiMTkyLjE2OC4xMDEuMTUiLCJuZXRtYXNrIjoiMjU1LjI1NS4yNTUuMCIsImZhbWlseSI6IklQdjQiLCJtYWMiOiIxMDpmZTplZDoxNDpjMDozMSIsImludGVybmFsIjpmYWxzZSwiY2lkciI6IjE5Mi4xNjguMTAxLjE1LzI0In1dLCJMb29wYmFjayBQc2V1ZG8tSW50ZXJmYWNlIDEiOlt7ImFkZHJlc3MiOiI6OjEiLCJuZXRtYXNrIjoiZmZmZjpmZmZmOmZmZmY6ZmZmZjpmZmZmOmZmZmY6ZmZmZjpmZmZmIiwiZmFtaWx5IjoiSVB2NiIsIm1hYyI6IjAwOjAwOjAwOjAwOjAwOjAwIiwiaW50ZXJuYWwiOnRydWUsImNpZHIiOiI6OjEvMTI4Iiwic2NvcGVpZCI6MH0seyJhZGRyZXNzIjoiMTI3LjAuMC4xIiwibmV0bWFzayI6IjI1NS4wLjAuMCIsImZhbWlseSI6IklQdjQiLCJtYWMiOiIwMDowMDowMDowMDowMDowMCIsImludGVybmFsIjp0cnVlLCJjaWRyIjoiMTI3LjAuMC4xLzgifV19LCJwbGF0Zm9ybSI6IndpbjMyIiwia2VybmVsIjoiV2luZG93cyAxMCBIb21lIiwiZnJlZW1lbSI6MzQyMTc1NzQ0MH0="
-  // }
   const request = net.request(
     {
       method: 'POST',
@@ -156,10 +147,6 @@ const sendInformation = (data, closeFlag = false) => {
   request.on('response', (response) => {
     console.log(`STATUS sendInformation: ${response.statusCode}`)
     console.log(`HEADERS sendInformation: ${JSON.stringify(response.headers)}`)
-    // if (response.statusCode == 403) {
-    //   global.wrongCohortNumber = true
-    //   !warnWindow && createWarnWindow(global.wrongCohortNumber)
-    // }
     response.on('data', (chunk) => {
       console.log(`BODY: ${chunk}`)
     })
@@ -171,6 +158,7 @@ const sendInformation = (data, closeFlag = false) => {
     })
   })
   request.setHeader('Content-Type', 'application/json')
+  console.log(data)
   request.write(JSON.stringify(data), 'utf-8')
   request.end()
 

@@ -164,7 +164,7 @@ export const useAuthActions = (dispatch) => {
     // Revisar que quiere en la descripcion aqui
     const body = {
       identification: Info.identification,
-      type_log: 1,
+      type_log: 0,
       remoteControl: false,
       externalDevices: false,
       externalScreen: false,

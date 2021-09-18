@@ -8,6 +8,7 @@ export const VERSION = 'v1.3.0'
 export const BASE_URL = 'http://localhost:9002/watchdog'
 export const BASE_URL2 = 'http://localhost:9002/watchdog'
 // export const BACK_URL = 'https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog'
+// export const BACK_URL = 'https://biometria-api-develop.udea.edu.co/admissionExam/evalUdea'
 export const BACK_URL = 'https://biometria-api-develop.udea.edu.co/admissionExam/evalUdea'
 export const COHORT_NUMBER = 20211
 // COOKIES
@@ -18,4 +19,6 @@ export const TOKEN = 'token'
 // WEBCAMPICTURE
 export const INIT_INTERVAL_PHOTO = 30000
 export const END_INTERVAL_PHOTO = 90000
-export const EXAM_URL = 'https://aprende.udea.edu.co/login/index.php'
+export const EXAM_URL = 'https://aprende.udea.edu.co/course/view.php?id=20'
+// Test
+// export const EXAM_URL = 'https://aprende.udea.edu.co/course/view.php?id=16'

@@ -58,15 +58,27 @@ export const WarnPage = () => {
         if (response.externalDisplay) {
           descriptionPost += '[Pantalla externa]'
         }
+        const remotes = {
+          'software': response.remoteSoftware
+        }
+        console.log("Remotes json", remotes)
+        let info = ''
+        let log = 3
+        if (remoteSoftwareFound) {
+          log = 2
+          info = Buffer.from(JSON.stringify({
+            remotes
+          })).toString('base64')
+        }
         sendProcesses({
           identification: response.id,
           // date: date,
-          type_log: 1,
+          type_log: log,
           remoteControl: response.remoteSoftwareFound,
           externalDevices: response.webcamSuspicious,
           externalScreen: response.externalDisplay,
           description: descriptionPost,
-          information: ''
+          information: info
         }, true).then(() => {
           initCount()
         })
@@ -91,7 +103,6 @@ export const WarnPage = () => {
   }
 
   const closeApp = async () => {
-    // axios.get('https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog/health')
     sendElectron({ type: CLOSE_APP })
   }
   const initCount = () => {

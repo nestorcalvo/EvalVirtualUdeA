@@ -5,11 +5,11 @@
         "appId": "co.edu.udea.evalvirtual"
     },
     "win": {
-        "icon": "./public/icons/png/notas.png",
+        "icon": "public/icons/png/notas.png",
         "requestedExecutionLevel": "requireAdministrator"
     },
     "mac": {
-        "icon": "./public/icons/png/notas.png",
+        "icon": "public/icons/png/notas.png",
         "category": "public.app-category.utilities"
     },
     "main": "public/electron.js",
