@@ -168,18 +168,18 @@ const checkCohort = () => {
       method: 'GET',
       protocol: 'https:',
       hostname: 'biometria-api-develop.udea.edu.co/admissionExam/evalUdea/checkAdmission',
-      path: '/20211'
+      path: '/20201PRENUEANT1'
     }
   )
   request.on('response', (response) => {
-    // console.log(`STATUS checkCohort: ${response.statusCode}`)
-    // console.log(`HEADERS checkCohort: ${JSON.stringify(response.headers)}`)
-    if (response.statusCode == 403) {
+    console.log(`STATUS checkCohort: ${response.statusCode}`)
+    console.log(`HEADERS checkCohort: ${JSON.stringify(response.headers)}`)
+    if (response.statusCode == 400) {
       global.wrongCohortNumber = true
       !warnWindow && createWarnWindow(global.wrongCohortNumber)
     }
     response.on('data', (chunk) => {
-      // console.log(`BODY: ${chunk}`)
+      console.log(`BODY: ${chunk}`)
     })
     response.on('end', () => {
       // console.log('No more data in response.')
