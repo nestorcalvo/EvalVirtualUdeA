@@ -70,7 +70,7 @@ export const useAuthActions = (dispatch) => {
       .catch((error) => {
         dispatch({ type: AUTH_ERROR, payload: error.message })
         sendLogoutState()
-        setError('Usuario o contraseñas invalidos')
+        setError('Usuario o contraseña invalidos')
         return error
       })
   }
