@@ -161,7 +161,6 @@ const sendInformation = (data, closeFlag = false) => {
   console.log(data)
   request.write(JSON.stringify(data), 'utf-8')
   request.end()
-
 }
 const checkCohort = () => {
   const request = net.request(
@@ -201,7 +200,7 @@ const createMainWindow = () => {
     icon: path.join(__dirname, './icons/png/notas.png'),
     webPreferences: {
       nodeIntegration: true,
-      devTools: true,
+      devTools: false,
       contextIsolation: false,
       enableRemoteModule: true
       // Desable CORS for dev
@@ -302,7 +301,7 @@ const createQuizWindow = ({ urlQuiz, cookies, isMinimizable }) => {
     webPreferences: {
       contextIsolation: false,
       nodeIntegration: false,
-      devTools: true,
+      devTools: false,
       webSecurity: true,
       enableRemoteModule: true,
       preload: path.resolve(path.join(__dirname, 'preload.js'))
@@ -402,7 +401,7 @@ const createConfirmWindow = (state) => {
     resizable: false,
     webPreferences: {
       nodeIntegration: true,
-      devTools: true,
+      devTools: false,
       contextIsolation: false,
       enableRemoteModule: true
     }
