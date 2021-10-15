@@ -17,7 +17,7 @@ export const BACK_URL =
 // COOKIES
 export const COOKIE_TOKEN = "tokenEvalVirtual";
 export const COOKIE_MAC = "macEvalVirtual";
-export const COHORT_NUMBER = "20211";
+export const COHORT_NUMBER = "20221PRENUEANT1";
 // LOCALSTORAGE
 export const TOKEN = "token";
 // WEBCAMPICTURE

@@ -222,7 +222,7 @@ const checkCohort = () => {
     method: "GET",
     protocol: "https:",
     hostname: "biometria-api.udea.edu.co/admissionExam/evalUdea/checkAdmission",
-    path: "/20211",
+    path: "/20221PRENUEANT1",
   });
   request.setHeader(
     "Token-Security",
@@ -473,6 +473,8 @@ const createWarnWindow = (state) => {
   });
   warnWindow.once("closed", () => {
     console.log("Warning cerrada y por ende las demas tambien");
+    closeQuizWindow();
+    closeMainWindowsClose();
     // closeWarnWindow();
   });
 };
