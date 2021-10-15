@@ -1,4 +1,4 @@
-export const VERSION = "v0.3.1";
+export const VERSION = "v1.3.1";
 // COMMON URL
 // export const URL_BIOMETRICS = 'https://api.ingeniaudea.co/evalvirtual/webapi'
 // export const URL_BIOMETRICS = 'http://arquimedes.udea.edu.co:8098'
@@ -8,9 +8,9 @@ export const VERSION = "v0.3.1";
 export const BASE_URL = "http://localhost:9002/watchdog";
 export const BASE_URL2 = "http://localhost:9002/watchdog";
 // export const BACK_URL = 'https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog'
-// export const BACK_URL = 'https://biometria-api-develop.udea.edu.co/admissionExam/evalUdea'
+// export const BACK_URL = 'https://biometria-api.udea.edu.co/admissionExam/evalUdea'
 export const BACK_URL =
-  "https://biometria-api-develop.udea.edu.co/admissionExam/evalUdea";
+  "https://biometria-api.udea.edu.co/admissionExam/evalUdea";
 // export const COHORT_NUMBER = "20201PRENUEANT1";
 // Test only
 
