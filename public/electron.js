@@ -59,6 +59,7 @@ const {
   ELECTRON_REMOTE_SOFTWARE_ACTIVATED,
   SEND_INFORMATION,
 } = require("./electronTypes");
+const { globalEval } = require("jquery");
 // const axios = require('axios')
 // // URL PARA PETICIONES, ES LA MISMA VARIABLE QUE EN ../src/utils/constantes
 // const BACK_URL = 'https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog'
@@ -85,10 +86,15 @@ global.wrongCohortNumber = false;
 global.wrongSecurityToken = false;
 
 global.sendURL = null;
+global.mainWindow_open = false;
+global.biometricWindow_open = false;
+global.quizWindow_open = false;
+global.warnWindow_open = false;
 let mainWindow;
 let biometricWindow;
 let quizWindow;
 let warnWindow;
+
 let confirmWindow;
 let timerSoftwareSupicious;
 let timerExtraScreens;
@@ -130,7 +136,7 @@ const watchEvents = (channel, listener) => {
     console.log("Evento cerrar aplicación");
     clearIntervalAsync(timerExtraScreens);
     closeWarnWindow();
-    onWindowsClose();
+    // onWindowsClose();
   });
   ipcMain.on(SHOW_BIOMETRIC_WINDOW, async (event, state) => {
     if (biometricWindow) {
@@ -271,6 +277,7 @@ const createMainWindow = () => {
   mainWindow = new BrowserWindow(optionsWindow);
   //mainWindow.removeMenu()
   // once is executed one time, on() is executed multiple times
+  global.mainWindow_open = true;
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
     timerSoftwareSupicious = setIntervalAsync(checkRemoteSoftware, 1000);
@@ -278,7 +285,19 @@ const createMainWindow = () => {
   });
   mainWindow.once("closed", () => {
     console.log("Once closed mainWindow");
+
     // closeMainWindowsClose();
+    global.mainWindow_open = false;
+    if (global.warnWindow_open) {
+      console.log("On close mainWindow");
+      closeWarnWindow();
+    }
+    if (global.quizWindow_open) {
+      closeQuizWindow();
+    }
+    if (global.biometricWindow_open) {
+      closeBiometricWindow();
+    }
   });
   // We can load a content in our window
   const startUrl = isDev
@@ -289,10 +308,11 @@ const createMainWindow = () => {
         slashes: true,
       });
   mainWindow.on("close", () => {
-    console.log("On close mainWindow");
     // closeBiometricWindow();
     // closeQuizWindow();
     // closeWarnWindow();
+    global.mainWindow_open = false;
+    app.quit();
     // onWindowsClose();
   });
   mainWindow.loadURL(startUrl);
@@ -338,6 +358,7 @@ const createBiometricWindow = (state) => {
   });
   // 'floating' + 1 is higher than all regular windows, but still behind things
   // like spotlight or the screen saver
+  global.biometricWindow_open = true;
   biometricWindow.setAlwaysOnTop(true, "floating", 2);
   // allows the window to show over a fullscreen window
   biometricWindow.setVisibleOnAllWorkspaces(true);
@@ -350,7 +371,10 @@ const createBiometricWindow = (state) => {
     // closeMainWindowsClose();
     // closeQuizWindow();
     // closeWarnWindow();
+
     console.log("Evento cerrar biometria");
+    biometricWindow = null;
+    global.biometricWindow_open = false;
     // mainWindow.close()
   });
   biometricWindow.loadURL(urlBiometrics);
@@ -383,6 +407,7 @@ const createQuizWindow = ({ urlQuiz, cookies, isMinimizable }) => {
   quizWindow.maximize();
   quizWindow.removeMenu();
   quizWindow.loadURL(urlQuiz);
+  global.quizWindow_open = true;
   quizWindow.once("closed", (event) => {
     console.log("Once closed quiz");
     const body = {
@@ -396,13 +421,41 @@ const createQuizWindow = ({ urlQuiz, cookies, isMinimizable }) => {
       information: "",
     };
     sendInformation(body, true);
+    quizWindow = undefined;
+    global.quizWindow_open = false;
+    if (global.mainWindow_open) {
+      closeMainWindowsClose();
+    }
+    if (global.warnWindow_open) {
+      closeWarnWindow();
+    }
+    if (global.biometricWindow_open) {
+      closeBiometricWindow();
+    }
   });
   quizWindow.on("close", () => {
     console.log("On close quiz");
+    global.quizWindow_open = false;
 
-    closeMainWindowsClose();
-    closeBiometricWindow();
-    closeWarnWindow();
+    // try {
+    // } catch (e) {
+    //   console.log("Main window was already destroyed");
+    // }
+
+    // try {
+    // } catch (e) {
+    //   console.log("Main window already closed");
+    // }
+
+    // try {
+    // } catch (e) {
+    //   console.log("Warn window was already destroyed");
+    // }
+    // try {
+    // } catch (e) {
+    //   console.log("Warn window already closed");
+    // }
+    // onWindowsClose();
     // onWindowsClose();
   });
   quizWindow.setAlwaysOnTop(true, "floating", 1);
@@ -462,19 +515,22 @@ const createWarnWindow = (state) => {
       });
   warnWindow.loadURL(urlWarn);
   warnWindow.webContents.send("payload", state);
+  global.warnWindow_open = true;
   warnWindow.once("ready-to-show", () => warnWindow.show());
   warnWindow.on("close", () => {
-    console.log("Warning cerrada");
-
-    // closeQuizWindow();
-    // closeBiometricWindow();
-    // closeMainWindowsClose();
-    // closeWarnWindow();
+    console.log("Warning cerrada y por ende las demas tambien");
+    global.warnWindow_open = false;
   });
   warnWindow.once("closed", () => {
-    console.log("Warning cerrada y por ende las demas tambien");
-    closeQuizWindow();
-    closeMainWindowsClose();
+    if (global.quizWindow_open) {
+      closeQuizWindow();
+    }
+    if (global.mainWindow_open) {
+      closeMainWindowsClose();
+    }
+    global.warnWindow_open = false;
+    // onWindowsClose();
+
     // closeWarnWindow();
   });
 };
@@ -514,6 +570,7 @@ const createConfirmWindow = (state) => {
   confirmWindow.loadURL(urlConfirm);
   confirmWindow.once("closed", () => {
     console.log("Once closed confirm window");
+
     closeConfirmWindow();
   });
   confirmWindow.once("ready-to-show", () => {
@@ -636,10 +693,10 @@ const checkRemoteSoftware = async () => {
         isRemoteSoftware
       );
     }
-    if (warnWindow) {
-      warnWindow.close();
-      warnWindow = null;
-    }
+    // if (warnWindow) {
+    //   warnWindow.close();
+    //   warnWindow = null;
+    // }
   }
 };
 
@@ -747,25 +804,28 @@ const verifyExternalDisplay = (ps) => {
 };
 
 const closeBiometricWindow = () => {
-  if (biometricWindow) {
+  if (global.biometricWindow_open && biometricWindow !== undefined) {
     biometricWindow.closable = true;
     biometricWindow.close();
+    global.biometricWindow_open = false;
+    biometricWindow = undefined;
   }
-  // biometricWindow = null
 };
 const closeQuizWindow = () => {
-  if (quizWindow) {
+  if (global.quizWindow_open && quizWindow !== undefined) {
     quizWindow.closable = true;
     quizWindow.close();
+    global.quizWindow_open = false;
+    quizWindow = undefined;
   }
-  // quizWindow = null
 };
 const closeWarnWindow = () => {
-  if (warnWindow) {
+  if (global.warnWindow_open && warnWindow !== undefined) {
     warnWindow.closable = true;
     warnWindow.close();
+    global.warnWindow_open = false;
+    warnWindow = undefined;
   }
-  // warnWindow = null
 };
 
 const closeConfirmWindow = () => {
@@ -776,9 +836,11 @@ const closeConfirmWindow = () => {
   // confirmWindow = null
 };
 const closeMainWindowsClose = () => {
-  if (mainWindow) {
+  if (global.mainWindow_open && mainWindow !== undefined) {
     mainWindow.closable = true;
     mainWindow.close();
+    global.mainWindow_open = false;
+    mainWindow = undefined;
   }
 };
 
@@ -801,6 +863,8 @@ const onWindowsClose = () => {
   quizWindow = null;
   warnWindow = null;
   mainWindow = null;
+
+  console.log("Quit application onWindowsClose");
   app.quit();
 };
 

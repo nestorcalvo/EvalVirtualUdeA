@@ -18,11 +18,12 @@ export const BACK_URL =
 export const COOKIE_TOKEN = "tokenEvalVirtual";
 export const COOKIE_MAC = "macEvalVirtual";
 export const COHORT_NUMBER = "20221PRENUEANT1";
+// export const COHORT_NUMBER = "20211";
 // LOCALSTORAGE
 export const TOKEN = "token";
 // WEBCAMPICTURE
 export const INIT_INTERVAL_PHOTO = 30000;
 export const END_INTERVAL_PHOTO = 90000;
-// export const EXAM_URL = "https://aprende.udea.edu.co/course/view.php?id=20";
+export const EXAM_URL = "https://aprende.udea.edu.co/course/view.php?id=24";
 // Test
-export const EXAM_URL = "https://aprende.udea.edu.co/course/view.php?id=16";
+// export const EXAM_URL = "https://aprende.udea.edu.co/course/view.php?id=16";
