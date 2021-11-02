@@ -193,7 +193,9 @@ const sendInformation = (data, closeFlag = false) => {
   const request = net.request({
     method: "POST",
     protocol: "https:",
-    hostname: "biometria-api.udea.edu.co/admissionExam/evalUdea",
+    // hostname: "biometria-api.udea.edu.co/admissionExam/evalUdea",
+    hostname: "biometria-api-develop.udea.edu.co/admissionExam/evalUdea",
+
     path: "/sendWarnings",
   });
   request.setHeader(
@@ -227,8 +229,10 @@ const checkCohort = () => {
   const request = net.request({
     method: "GET",
     protocol: "https:",
-    hostname: "biometria-api.udea.edu.co/admissionExam/evalUdea/checkAdmission",
-    path: "/20221PRENUEANT1",
+    // hostname: "biometria-api.udea.edu.co/admissionExam/evalUdea/checkAdmission",
+    // path: "/20221PRENUEANT1",
+    hostname: "biometria-api-develop.udea.edu.co/admissionExam/evalUdea",
+    path: "/20211",
   });
   request.setHeader(
     "Token-Security",

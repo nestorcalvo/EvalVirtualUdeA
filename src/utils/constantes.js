@@ -9,16 +9,16 @@ export const BASE_URL = "http://localhost:9002/watchdog";
 export const BASE_URL2 = "http://localhost:9002/watchdog";
 // export const BACK_URL = 'https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog'
 // export const BACK_URL = 'https://biometria-api.udea.edu.co/admissionExam/evalUdea'
-export const BACK_URL =
-  "https://biometria-api.udea.edu.co/admissionExam/evalUdea";
-// export const COHORT_NUMBER = "20201PRENUEANT1";
-// Test only
+// export const BACK_URL =
+//   "https://biometria-api.udea.edu.co/admissionExam/evalUdea";
 
+// Test only
+export const BACK_URL = "https://biometria-api-develop.udea.edu.co/";
 // COOKIES
 export const COOKIE_TOKEN = "tokenEvalVirtual";
 export const COOKIE_MAC = "macEvalVirtual";
-export const COHORT_NUMBER = "20221PRENUEANT1";
-// export const COHORT_NUMBER = "20211";
+// export const COHORT_NUMBER = "20221PRENUEANT1";
+export const COHORT_NUMBER = "20211";
 // LOCALSTORAGE
 export const TOKEN = "token";
 // WEBCAMPICTURE

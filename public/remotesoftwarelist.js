@@ -10,6 +10,7 @@ module.exports = {
     "firefox",
     "msedge",
     "discord",
+    "skype",
     "edge",
     "safari",
     "opera",
