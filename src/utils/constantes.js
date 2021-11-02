@@ -13,7 +13,8 @@ export const BASE_URL2 = "http://localhost:9002/watchdog";
 //   "https://biometria-api.udea.edu.co/admissionExam/evalUdea";
 
 // Test only
-export const BACK_URL = "https://biometria-api-develop.udea.edu.co/";
+export const BACK_URL =
+  "https://biometria-api-develop.udea.edu.co/admissionExam/evalUdea";
 // COOKIES
 export const COOKIE_TOKEN = "tokenEvalVirtual";
 export const COOKIE_MAC = "macEvalVirtual";
