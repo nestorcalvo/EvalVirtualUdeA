@@ -17,13 +17,17 @@ export const BACK_URL =
 // COOKIES
 export const COOKIE_TOKEN = "tokenEvalVirtual";
 export const COOKIE_MAC = "macEvalVirtual";
-export const COHORT_NUMBER = "20221PRENUEANT1";
+export const COHORT_NUMBER = "20221";
 // export const COHORT_NUMBER = "20211";
-// LOCALSTORAGE
-export const TOKEN = "token";
-// WEBCAMPICTURE
-export const INIT_INTERVAL_PHOTO = 30000;
-export const END_INTERVAL_PHOTO = 90000;
+export const COHORT = "20211";
+export const BIOMETRIA_URL =
+  "https://480c7a95-d41f-4105-a287-d391fdec460e.mock.pstmn.io/";
+
+export const BACK_URL_DEV =
+  "https://biometria-api-develop.udea.edu.co/admissionExam/evalUdea";
+export const BACK_URL_PRODUCTION =
+  "https://biometria-api.udea.edu.co/admissionExam/evalUdea";
+export const TOKEN =
+  "13bqmrE5RBwj1Pj2FYxAshlQPyljjf8NZl4yZ5Fvm1wMJ0XnmcwCAgTqY6x0xuBC5K41n";
+// Messages
 export const EXAM_URL = "https://aprende.udea.edu.co/course/view.php?id=24";
-// Test
-// export const EXAM_URL = "https://aprende.udea.edu.co/course/view.php?id=16";

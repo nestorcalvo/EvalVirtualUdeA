@@ -54,23 +54,6 @@ export const useAuthActions = (dispatch) => {
           `/checkCandidate?id_number=${loginInfo.identification}&password=${loginInfo.password}&id_admission=${loginInfo.id_admission}`
         ),
         loginInfo
-        // {
-        //   headers: {
-        //     "Token-Security":
-        //       "13bqmrE5RBwj1Pj2FYxAshlQPyljjf8NZl4yZ5Fvm1wMJ0XnmcwCAgTqY6x0xuBC5K41n",
-        //   },
-        // }
-        // {
-        //   headers:
-        //   {
-        //     // 'X-Requested-With': 'XMLHttpRequest',
-        //     "Access-Control-Allow-Origin": "*",
-        //     "Access-Control-Allow-Headers": "X-Requested-With",
-        //     "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE, PUT",
-        //     "Access-Control-Allow-Headers" :"append,delete,entries,foreach,get,has,keys,set,values,Authorization",
-        //     'Content-Type': 'text/plain;charset=utf-8'
-        //   }
-        // }
       )
       .then((response) => {
         // console.log(response);
@@ -89,16 +72,6 @@ export const useAuthActions = (dispatch) => {
         sendLogoutState();
         setError("Usuario o contraseña invalidos");
         return error;
-        // if (error.response) {
-        //   if (error.response.status == 400) {
-
-        //   } else if (error.response.status == 401) {
-        //     dispatch({ type: AUTH_ERROR, payload: error.message });
-        //     sendLogoutState();
-        //     setError("Token de seguridad incorrecto");
-        //     return error;
-        //   }
-        // }
       });
     console.log("Login request", req.headers);
   };
