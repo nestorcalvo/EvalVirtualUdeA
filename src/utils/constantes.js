@@ -17,9 +17,9 @@ export const BACK_URL =
 // COOKIES
 export const COOKIE_TOKEN = "tokenEvalVirtual";
 export const COOKIE_MAC = "macEvalVirtual";
-export const COHORT_NUMBER = "20221";
-// export const COHORT_NUMBER = "20211";
-export const COHORT = "20211";
+export const COHORT_NUMBER = "202212";
+
+export const COHORT = "202112";
 export const BIOMETRIA_URL =
   "https://480c7a95-d41f-4105-a287-d391fdec460e.mock.pstmn.io/";
 

@@ -1,6 +1,6 @@
 module.exports = {
   RemoteSoftwareList: [
-    "AnyDesk",
+    // "AnyDesk",
     "TeamViewer",
     "mstsc",
     "ScreenConnect",

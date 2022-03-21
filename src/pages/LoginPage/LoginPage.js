@@ -52,6 +52,7 @@
 // }
 import React, { useState } from "react";
 import { COHORT } from "../../utils/constantes";
+import CheckCohort from "../CheckCohort/CheckCohort";
 import axiosConfig from "../../axiosConfig";
 
 import Avatar from "@mui/material/Avatar";
@@ -68,7 +69,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Image from "../../utils/5f11e2ed57141.jpeg";
-
+import "../../styles/styles.css";
 const theme = createTheme();
 export default function Login() {
   const [id_number, setIdNumber] = useState("");
@@ -125,6 +126,7 @@ export default function Login() {
     //     </div>
     // </div>
     <>
+      <CheckCohort />
       <ThemeProvider theme={theme}>
         <Grid container component="main" sx={{ height: "100%" }}>
           <CssBaseline />

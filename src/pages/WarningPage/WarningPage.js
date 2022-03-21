@@ -166,9 +166,9 @@
 //   );
 // };
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Countdown from "react-countdown";
-import axiosConfig from "../../axiosConfig";
+// import axiosConfig from "../../axiosConfig";
 
 // const { remote, ipcRenderer } = window.require("electron");
 export default function WarningPage() {
@@ -191,7 +191,7 @@ export default function WarningPage() {
     console.log(args);
   });
   setTimeout(() => {
-    if (softwareList != "") {
+    if (softwareList !== "") {
       window.ipcRenderer.send("take_screenshot");
     }
   }, 10000);
@@ -225,7 +225,7 @@ export default function WarningPage() {
       ) : (
         <></>
       )}
-      {softwareList != "" ? (
+      {softwareList !== "" ? (
         <h1>
           Software {softwareList.join(", ")} no permitido se encuentra abierto,
           porfavor asegurese de cerrar todo por completo y tener todo en regla

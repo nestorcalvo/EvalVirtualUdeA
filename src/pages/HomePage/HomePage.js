@@ -109,10 +109,10 @@
 //   );
 // };
 import React from "react";
-import CheckCohort from "../CheckCohort/CheckCohort";
-import Login from "../LoginPage/LoginPage";
+// import CheckCohort from "../CheckCohort/CheckCohort";
+// import Login from "../LoginPage/LoginPage";
 import OpenWebCam from "../OpenWebCam/OpenWebCam";
-
+import "../../styles/styles.css";
 // const { ipcRenderer } = window.require("electron");
 export default function HomePage() {
   const renderExamPage = () => {
@@ -127,16 +127,16 @@ export default function HomePage() {
           {" "}
           Bienvenido al examen de admisión
         </h2>
-        <h3 style={{ backgroundColor: "darkgreen" }}>
+        {/* <h3 style={{ backgroundColor: "darkgreen" }}>
           Recomendamos probar el acceso a su cámara web mediante el botón
           provisto a continuación.
-        </h3>
+        </h3> */}
         <h3 style={{ backgroundColor: "red" }}>
           IMPORTANTE:
           <ol>
             <li>
-              No empiece el examen sin antes verificar que se pueda acceder a la
-              cámara web.
+              Se recomienda verificar en la parte inferior (ecima del botón de
+              iniciar examen) que su camara esté encendida y funcionando.
             </li>
             <li>
               Una vez ingrese al examen, no podrá cerrar ninguna de las ventanas

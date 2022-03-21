@@ -1,14 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import { useStore } from "./store/storeContext";
-import { GlobalStyles } from "./styles/GlobalStyles";
 import HomePage from "./pages/HomePage/HomePage";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import "./styles/styles.css";
 import { useScreenActions } from "./actions/screenActions";
 import { useRemoteSoftwareActions } from "./actions/remotesoftwareActions";
 import WarningPage from "./pages/WarningPage/WarningPage";
-import CheckCohort from "./pages/CheckCohort/CheckCohort";
+// import CheckCohort from "./pages/CheckCohort/CheckCohort";
+import WrongCohort from "./pages/WrongCohort/WrongCohort";
+// import "./styles/styles.css";
 
 const App = () => {
   const { dispatch } = useStore();
@@ -29,24 +30,25 @@ const App = () => {
   }, []);
 
   return (
-    <Router>
-      <GlobalStyles />
-
-      <Switch>
-        <Route exact path="/" component={LoginPage} />
-        <Route exact path="/warning" component={WarningPage} />
-        <Route exact path="/login" component={LoginPage} />
-        <Route exact path="/home" component={HomePage} />
-        {/* wrongCohort */}
-        {/* <Layout>
+    <>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={LoginPage} />
+          <Route exact path="/warning" component={WarningPage} />
+          <Route exact path="/login" component={LoginPage} />
+          <Route exact path="/home" component={HomePage} />
+          <Route exact path="/wrongCohort" component={WrongCohort} />
+          {/* wrongCohort */}
+          {/* <Layout>
           <Route exact path="/home" component={HomePage} />
           <Route exact path="/" component={HomePage} />
           <Route exact path='/' component={LoginPage} />
           <Route exact path="/login" component={LoginPage} />
           <Route exact path='/cohort/:cohortId' component={CohortPage} />
         </Layout> */}
-      </Switch>
-    </Router>
+        </Switch>
+      </Router>
+    </>
   );
 };
 

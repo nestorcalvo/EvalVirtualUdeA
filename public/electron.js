@@ -185,9 +185,9 @@ const getScreenInfo = async () => {
       // if(!warnWindowChild){
       createWarnWindow();
       // }
-      const urlWrongCohort = isDev
-        ? "http://localhost:3000#/wrongCohort"
-        : url.format(new URL(`file:///${__dirname}/index.html#/wrongCohort`), {
+      const urlWarn = isDev
+        ? "http://localhost:3000#/warning"
+        : url.format(new URL(`file:///${__dirname}/index.html#/warning`), {
             unicode: true,
           });
 
@@ -559,8 +559,17 @@ ipcMain.on("wrongCohort", (event, args) => {
     : url.format(new URL(`file:///${__dirname}/index.html#/wrongCohort`), {
         unicode: true,
       });
-
   warnWindowChild.loadURL(urlWrongCohort);
+  warnWindowChild.once("show", () => {
+    console.log("Wrong cohort");
+  });
+  warnWindowChild.once("ready-to-show", () => {
+    warnWindowChild.show();
+    // if(isDev){
+
+    //   warnWindowChild.webContents.openDevTools()
+    // }
+  });
 
   console.log(args);
 });
@@ -568,6 +577,20 @@ ipcMain.on("wrongCohort", (event, args) => {
 ipcMain.on("exam", (event, args) => {
   console.log("Iniciar examen");
   mainWindow.show();
+  // mainWindow.webContents.on("did-finish-load", async () => {
+  //   if (cookies) {
+  //     cookies.forEach((cookie) => {
+  //       session.defaultSession.cookies.set(cookie).then(
+  //         () => {
+  //           // success
+  //         },
+  //         (error) => {
+  //           console.error(error);
+  //         }
+  //       );
+  //     });
+  //   }
+  // });
   mainWindow.loadURL(EXAM_URL);
   // if(isDev){
 
