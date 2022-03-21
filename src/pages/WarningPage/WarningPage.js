@@ -169,6 +169,7 @@
 import React, { useState } from "react";
 import Countdown from "react-countdown";
 // import axiosConfig from "../../axiosConfig";
+import "./styles.css";
 
 // const { remote, ipcRenderer } = window.require("electron");
 export default function WarningPage() {

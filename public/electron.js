@@ -75,6 +75,7 @@ let firstTimeWindow = true;
 let firstTimeScreenshot = true;
 let webcamSuspicious = false;
 let externalDisplay = false;
+let firstTimeClose = true;
 
 global.software = null;
 
@@ -131,9 +132,12 @@ const sendInformation = (data, closeFlag = false) => {
   request.on("response", (response) => {
     // console.log(`STATUS sendInformation: ${response.statusCode}`);
     // console.log(`HEADERS sendInformation: ${JSON.stringify(response.headers)}`);
+    // console.log(response);
+    console.log(response.statusCode);
     if (response.statusCode == 401) {
       // global.wrongSecurityToken = true;
       // !warnWindow && createWarnWindow(global.wrongSecurityToken);
+
       return false;
     }
     response.on("data", (chunk) => {
@@ -186,15 +190,22 @@ const getScreenInfo = async () => {
       createWarnWindow();
       // }
       const urlWarn = isDev
-        ? "http://localhost:3000#/warning"
-        : url.format(new URL(`file:///${__dirname}/index.html#/warning`), {
-            unicode: true,
+        ? "http://localhost:3000#warning"
+        : url.format({
+            pathname: path.join(__dirname, "index.html"),
+            hash: "/warning",
+            protocol: "file:",
+            slashes: true,
           });
 
-      warnWindowChild.loadURL(urlWrongCohort);
+      warnWindowChild.loadURL(urlWarn);
 
       warnWindowChild.once("show", () => {
-        console.log("Warnwindow open but without login");
+        if (userId) {
+          console.log("Warnwindow open with login");
+        } else {
+          console.log("Warnwindow open without login");
+        }
         warnWindowChild.webContents.send("externalDisplay", true);
       });
       warnWindowChild.once("ready-to-show", () => {
@@ -261,12 +272,13 @@ const getScreenInfo = async () => {
               })
               .then((sources) => {
                 // The image to display the screenshot
-                console.log(sources);
+                // console.log(sources);
                 let file = sources[0].thumbnail.toDataURL();
-                console.log(
-                  "Imagen a buffer:",
-                  Buffer.from(file.toString("base64"))
-                );
+                // console.log(
+                //   "Imagen a buffer:",
+                //   Buffer.from(file.toString("base64"))
+                // );
+                console.log("Screenshot");
                 const body = {
                   identification: userId,
                   type_log: 4,
@@ -334,15 +346,22 @@ const checkRemoteSoftware = async function () {
     createWarnWindow();
     // }
     const urlWarn = isDev
-      ? "http://localhost:3000#/warning"
-      : url.format(new URL(`file:///${__dirname}/index.html#/warning`), {
-          unicode: true,
+      ? "http://localhost:3000#warning"
+      : url.format({
+          pathname: path.join(__dirname, "index.html"),
+          hash: "/warning",
+          protocol: "file:",
+          slashes: true,
         });
 
     warnWindowChild.loadURL(urlWarn);
 
     warnWindowChild.once("show", () => {
-      console.log("Warnwindow open but without login");
+      if (userId) {
+        console.log("Warnwindow open with login");
+      } else {
+        console.log("Warnwindow open without login");
+      }
       warnWindowChild.webContents.send("software", remoteSoftware);
     });
     warnWindowChild.once("ready-to-show", () => {
@@ -353,7 +372,7 @@ const checkRemoteSoftware = async function () {
       // }
     });
     if (userId && notSended) {
-      console.log("Send log to biometria");
+      console.log("Prepare log to biometria");
 
       let descriptionPost = "El usuario tiene: ";
       if (remoteSoftware) {
@@ -371,7 +390,6 @@ const checkRemoteSoftware = async function () {
       let info = "";
       let log = 3;
       if (remoteSoftware) {
-        console.log("Preparacion de log");
         console.log(remotes);
         log = 2;
         info = Buffer.from(
@@ -409,12 +427,13 @@ const checkRemoteSoftware = async function () {
             })
             .then((sources) => {
               // The image to display the screenshot
-              console.log(sources);
+              // console.log(sources);
               let file = sources[0].thumbnail.toDataURL();
-              console.log(
-                "Imagen a buffer:",
-                Buffer.from(file.toString("base64"))
-              );
+              // console.log(
+              //   "Imagen a buffer:",
+              //   Buffer.from(file.toString("base64"))
+              // );
+              console.log("Screenshot");
               const body = {
                 identification: userId,
                 type_log: 4,
@@ -448,19 +467,31 @@ const verifyRemoteAccessSoftware = async (uniqueProcesses) => {
   }
 };
 const sendClosedApp = (userId) => {
-  return new Promise(function (resolve, reject) {
-    const body = {
-      identification: userId,
-      type_log: 1,
-      remoteControl: false,
-      externalDevices: false,
-      externalScreen: false,
-      description: "Aplicación cerrada",
-      information: "",
-    };
-    console.log("Entrada a promesa");
-    resolve(sendInformation(body, true));
-  });
+  // return new Promise(function (resolve, reject) {
+  //   const body = {
+  //     identification: userId,
+  //     type_log: 1,
+  //     remoteControl: false,
+  //     externalDevices: false,
+  //     externalScreen: false,
+  //     description: "Aplicación cerrada",
+  //     information: "",
+  //   };
+  //   console.log("Entrada a promesa");
+  //   resolve(sendInformation(body, true));
+  // });
+  const body = {
+    identification: userId,
+    type_log: 1,
+    remoteControl: false,
+    externalDevices: false,
+    externalScreen: false,
+    description: "Aplicación cerrada",
+    information: "",
+  };
+  console.log("Entrada cerrar app");
+  sendInformation(body, true);
+  app.quit();
 };
 
 const createWindow = () => {
@@ -468,10 +499,11 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    frame: isDev ? true : false,
+    // frame: false,
     autoHideMenuBar: isDev ? true : false,
-
+    closable: true,
     resizable: isDev ? true : false,
+    minimizable: isDev ? true : false,
     webPreferences: {
       // Revisar esto debido a que no es lo ideal
       nodeIntegration: true,
@@ -485,9 +517,10 @@ const createWindow = () => {
   mainWindow.setAlwaysOnTop(isDev ? false : true, "screen-saver");
   mainWindow.setVisibleOnAllWorkspaces(true);
   const logintUrl = isDev
-    ? "http://localhost:3000#/login"
+    ? "http://localhost:3000#login"
     : url.format({
-        pathname: path.join(__dirname, "../build/index.html#/login"),
+        pathname: path.join(__dirname, "index.html"),
+        hash: "/login",
         protocol: "file:",
         slashes: true,
       });
@@ -501,22 +534,13 @@ const createWindow = () => {
   });
   mainWindow.on("close", () => {
     console.log("Mainwindow is about to be closed");
-    if (userId) {
-      sendClosedApp(userId)
-        .then((response) => {
-          console.log("Response:", response);
-          if (response) {
-            app.quit();
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    if (userId && firstTimeClose) {
+      sendClosedApp(userId);
+      firstTimeClose = false;
     }
   });
-  // Open the DevTools.
 
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 const createWarnWindow = () => {
   warnWindowChild = new BrowserWindow({
@@ -537,7 +561,7 @@ const createWarnWindow = () => {
       preload: path.resolve(path.join(__dirname, "preload.js")),
     },
   });
-  // warnWindowChild.setFullScreen(isDev?false:true)
+  warnWindowChild.setFullScreen(isDev ? false : true);
   warnWindowChild.setAlwaysOnTop(true, "screen-saver");
   // warnWindowChild.setFullScreen(true)
   // warnWindowChild.setContentProtection(true)
@@ -555,10 +579,17 @@ ipcMain.on("wrongCohort", (event, args) => {
     createWarnWindow();
   }
   const urlWrongCohort = isDev
-    ? "http://localhost:3000#/wrongCohort"
-    : url.format(new URL(`file:///${__dirname}/index.html#/wrongCohort`), {
-        unicode: true,
+    ? "http://localhost:3000#wrongCohort"
+    : url.format({
+        pathname: path.join(__dirname, "index.html"),
+        hash: "/wrongCohort",
+        protocol: "file:",
+        slashes: true,
       });
+
+  // url.format(new URL(`file:///${__dirname}/index.html#wrongCohort`), {
+  //     unicode: true,
+  //   });
   warnWindowChild.loadURL(urlWrongCohort);
   warnWindowChild.once("show", () => {
     console.log("Wrong cohort");
@@ -604,9 +635,10 @@ ipcMain.on("login", (event, args) => {
   userId = args;
   mainWindow.show();
   const homeUrl = isDev
-    ? "http://localhost:3000#/home"
+    ? "http://localhost:3000#home"
     : url.format({
-        pathname: path.join(__dirname, "../build/index.html#/home"),
+        pathname: path.join(__dirname, "index.html"),
+        hash: "/home",
         protocol: "file:",
         slashes: true,
       });

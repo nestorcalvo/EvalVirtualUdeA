@@ -112,8 +112,24 @@ import React from "react";
 // import CheckCohort from "../CheckCohort/CheckCohort";
 // import Login from "../LoginPage/LoginPage";
 import OpenWebCam from "../OpenWebCam/OpenWebCam";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import Card from "@mui/material/Card";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import Typography from "@mui/material/Typography";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "../../styles/styles.css";
 // const { ipcRenderer } = window.require("electron");
+const theme = createTheme();
 export default function HomePage() {
   const renderExamPage = () => {
     console.log("Iniciar examen");
@@ -121,17 +137,96 @@ export default function HomePage() {
   };
   return (
     <>
-      <div className="home-container">
+      <ThemeProvider theme={theme}>
+        <Grid
+          container
+          component="main"
+          sx={{ height: "100%", width: "80%", mx: "auto", my: "auto" }}
+          display="flex"
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <CssBaseline />
+          <Grid item component={Paper} elevation={6}>
+            <Box
+              sx={{
+                // my: 8,
+                // mx: 32,
+                mx: "auto",
+                my: "auto",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Typography component="h1" variant="h5">
+                EXAMEN DE ADMISIÓN
+              </Typography>
+              <Typography component="h2" variant="h5">
+                Bienvenido al examen de admisión
+              </Typography>
+              <List
+                sx={{
+                  // width: "50%",
+                  // height: "auto",
+                  mx: "auto",
+                  my: "auto",
+                  // maxWidth: "80%",
+                  bgcolor: "background.paper",
+                }}
+              >
+                <ListItem>
+                  <Typography component="subtitle1">
+                    Se recomienda verificar en la parte inferior (encima del
+                    botón de iniciar examen) que su camara esté encendida y
+                    funcionando.
+                  </Typography>
+                </ListItem>
+
+                <ListItem>
+                  <Typography component="subtitle1">
+                    Una vez ingrese al examen, no podrá cerrar ninguna de las
+                    ventanas del aplicativo, de lo contrario, se generará un
+                    cierre total del examen y no podrá retornar a él.
+                  </Typography>
+                </ListItem>
+
+                <ListItem>
+                  <Typography component="subtitle1">
+                    El uso de software de acceso remoto, máquinas virtuales y
+                    segundas pantallas está prohibido. Cualquier uso será
+                    detectado y reportado y es causal de sanciones.
+                  </Typography>
+                </ListItem>
+              </List>
+              <Card variant="outlined" sx={{ mx: "auto" }}>
+                {<OpenWebCam></OpenWebCam>}
+              </Card>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                onClick={renderExamPage}
+                sx={{ mx: "auto", maxWidth: "20%", bgcolor: "success.main" }}
+              >
+                Iniciar Examen
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+      </ThemeProvider>
+      {/* <div className="home-container">
         <h1>EXAMEN DE ADMISIÓN</h1>
         <h2 style={{ textAlign: "center", margin: "2%" }}>
           {" "}
           Bienvenido al examen de admisión
-        </h2>
-        {/* <h3 style={{ backgroundColor: "darkgreen" }}>
+        </h2> */}
+      {/* <h3 style={{ backgroundColor: "darkgreen" }}>
           Recomendamos probar el acceso a su cámara web mediante el botón
           provisto a continuación.
         </h3> */}
-        <h3 style={{ backgroundColor: "red" }}>
+      {/* <h3 style={{ backgroundColor: "red" }}>
           IMPORTANTE:
           <ol>
             <li>
@@ -152,7 +247,7 @@ export default function HomePage() {
         </h3>
         {<OpenWebCam></OpenWebCam>}
         <button onClick={renderExamPage}>Iniciar examen</button>
-      </div>
+      </div> */}
     </>
   );
 }

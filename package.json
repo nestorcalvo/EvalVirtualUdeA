@@ -1,6 +1,6 @@
 {
-    "description": "Aplicación para control biométrico de evaluaciones de la Universidad de Antioquia",
-    "author": "Elías De Vargas Cuéter / Juan Sebastian Guerrero C / Nestor Calvo Ariza",
+    "description": "Aplicación para control de evaluaciones virtuales de la Universidad de Antioquia",
+    "author": "Universidad de Antioquia",
     "build": {
         "appId": "co.edu.udea.evalvirtual"
     },
@@ -17,6 +17,11 @@
     "productName": "EvalVirtualUdea",
     "version": "9.0.0",
     "private": true,
+    "files": [
+        "*.js",
+        "build",
+        "node_modules"
+      ],
     "homepage": "./",
     "license": "MIT",
     "dependencies": {
