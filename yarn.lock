@@ -4859,6 +4859,11 @@ entities@^2.0.0:
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.3.tgz#5c487e5742ab93c15abb5da22759b8590ec03b7f"
   integrity sha512-MyoZ0jgnLvB2X3Lg5HqpFmn1kybDiIfEQmKzTb5apr51Rb+T3KdmMiqa70T+bhGnyv7bQ6WMj2QMHpGMmlrUYQ==
 
+enumerate-devices@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/enumerate-devices/-/enumerate-devices-1.1.1.tgz#f610e6d11165325b24963095ec388a12f0b840c6"
+  integrity sha512-8zDbrc7ocusTL1ZGmvgy0cTwdyCaM7sGZoYLRmnWJalLQzmftDtce+uDU91gafOTo9MCtgjSIxyMv/F4+Hcchw==
+
 env-paths@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/env-paths/-/env-paths-2.2.0.tgz#cdca557dc009152917d6166e2febe1f039685e43"
@@ -8006,6 +8011,11 @@ mdn-data@2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/mdn-data/-/mdn-data-2.0.6.tgz#852dc60fcaa5daa2e8cf6c9189c440ed3e042978"
   integrity sha512-rQvjv71olwNHgiTbfPZFkJtjNMciWgswYeciZhtvWLO8bmX3TnhyA62I6sTWOyZssWHJJjY6/KiWwqQsWWsqOA==
+
+media-devices@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/media-devices/-/media-devices-0.3.0.tgz#e6f73af759f8d9c404b62bdedbc95fa7995d0b2f"
+  integrity sha512-ZJqw05PgJXGMXnYAfDYBO4FsFVeYK6Ud4Hdlb6yaTJDVgHH9iufs8BR9jZVA6KzLKxMVhTWYSf8his+B5nYdLA==
 
 media-typer@0.3.0:
   version "0.3.0"

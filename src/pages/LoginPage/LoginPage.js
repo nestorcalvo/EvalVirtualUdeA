@@ -94,7 +94,8 @@ export default function Login() {
       .then((response) => {
         console.log(response);
         setwrongSesionInfoMessage("");
-        window.ipcRenderer.send("login", response.data);
+        // window.api.request("login", response.data);
+        window.electron.login(response.data);
       })
       .catch((error) => {
         if (error.response.status == 400) {

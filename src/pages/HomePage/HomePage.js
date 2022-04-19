@@ -133,7 +133,8 @@ const theme = createTheme();
 export default function HomePage() {
   const renderExamPage = () => {
     console.log("Iniciar examen");
-    window.ipcRenderer.send("exam");
+    // ipcRenderer.send("exam");
+    window.electron.exam();
   };
   return (
     <>
@@ -177,7 +178,7 @@ export default function HomePage() {
                 }}
               >
                 <ListItem>
-                  <Typography component="subtitle1">
+                  <Typography variant="subtitle1">
                     Se recomienda verificar en la parte inferior (encima del
                     botón de iniciar examen) que su camara esté encendida y
                     funcionando.
@@ -185,7 +186,7 @@ export default function HomePage() {
                 </ListItem>
 
                 <ListItem>
-                  <Typography component="subtitle1">
+                  <Typography variant="subtitle1">
                     Una vez ingrese al examen, no podrá cerrar ninguna de las
                     ventanas del aplicativo, de lo contrario, se generará un
                     cierre total del examen y no podrá retornar a él.
@@ -193,7 +194,7 @@ export default function HomePage() {
                 </ListItem>
 
                 <ListItem>
-                  <Typography component="subtitle1">
+                  <Typography variant="subtitle1">
                     El uso de software de acceso remoto, máquinas virtuales y
                     segundas pantallas está prohibido. Cualquier uso será
                     detectado y reportado y es causal de sanciones.

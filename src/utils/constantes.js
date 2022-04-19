@@ -1,4 +1,4 @@
-export const VERSION = "v1.3.2";
+export const VERSION = "v2.1.0";
 // COMMON URL
 // export const URL_BIOMETRICS = 'https://api.ingeniaudea.co/evalvirtual/webapi'
 // export const URL_BIOMETRICS = 'http://arquimedes.udea.edu.co:8098'
@@ -17,9 +17,9 @@ export const BACK_URL =
 // COOKIES
 export const COOKIE_TOKEN = "tokenEvalVirtual";
 export const COOKIE_MAC = "macEvalVirtual";
-export const COHORT_NUMBER = "20221";
-
-export const COHORT = "20211";
+export const COHORT_NUMBER = "20222PRENUEANT1";
+//20222PRENUEANT1
+export const COHORT = "20222PRENUEANT1";
 export const BIOMETRIA_URL =
   "https://480c7a95-d41f-4105-a287-d391fdec460e.mock.pstmn.io/";
 

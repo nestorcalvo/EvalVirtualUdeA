@@ -17,7 +17,9 @@ export default function CheckCohort() {
         console.log(error.response.status);
         if (error.response.status == 400) {
           setwrongcohort(true);
-          window.ipcRenderer.send("wrongCohort", "Hola");
+          // window.ipcRenderer.send("wrongCohort", "Hola");
+          // ipcRenderer.send("wrongCohort", "Hola");
+          window.electron.wrongCohort();
         }
         console.error(error.response.data);
       });

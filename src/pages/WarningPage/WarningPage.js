@@ -175,47 +175,38 @@ import "./styles.css";
 export default function WarningPage() {
   const [softwareList, setsoftwareList] = useState("");
   const [externalDisplay, setexternalDisplay] = useState(false);
+  const [externalWebcam, setexternalWebcam] = useState(false);
   console.log("Entrada a warning");
   const closeWindow = () => {
     console.log("Cerrar ventana");
     window.close();
   };
 
-  window.ipcRenderer.on("software", (event, args) => {
+  window.api.response("software", (args) => {
+    console.log(`Received ${args} from main process`);
+    // console.log("Args:", args);
     setsoftwareList(args);
+  });
+  window.api.response("externalDisplay", (event, args) => {
+    setexternalDisplay(true);
 
     console.log(args);
   });
-  window.ipcRenderer.on("externalDisplay", (event, args) => {
-    setexternalDisplay(args);
+  window.api.response("externalWebcam", (event, args) => {
+    setexternalWebcam(args);
 
     console.log(args);
   });
+
   setTimeout(() => {
     if (softwareList !== "") {
-      window.ipcRenderer.send("take_screenshot");
+      window.api.request("take_screenshot");
     }
   }, 10000);
 
   let countdownValue = 20; //Valor en segundos
   return (
     <div>
-      {/* {
-        if (externalDisplay){
-          return(
-
-            <h1>Software no permitido se encuentra abierto, porfavor asegurese de cerrar todo por completo y tener las cosas en regla para poder iniciar el examen. Recuerde que
-              el uso de software no permitidos es causal de anulacion del examen
-            </h1>
-          )
-        } else{
-          return(
-            <h1>Software {softwareList} no permitido se encuentra abierto, porfavor asegurese de cerrar todo por completo y tener las cosas en regla para poder iniciar el examen. Recuerde que
-              el uso de software no permitidos es causal de anulacion del examen
-            </h1>
-          )
-        }
-      }  */}
       {externalDisplay ? (
         <h1>
           Pantalla externa detectada, asegurese de desconectarla y tener todo en
@@ -226,12 +217,22 @@ export default function WarningPage() {
       ) : (
         <></>
       )}
+      {externalWebcam ? (
+        <h1>
+          Camara web adicionl detectada, durante el examen solo puede hacerse
+          uso de una sola camara, asegurese de desconectarla y tener todo en
+          regla para poder continuar con el examen. Recuerde que el uso camaras
+          adicionales no está permitido y es causal de anulacion del examen.
+        </h1>
+      ) : (
+        <></>
+      )}
       {softwareList !== "" ? (
         <h1>
           Software {softwareList.join(", ")} no permitido se encuentra abierto,
-          porfavor asegurese de cerrar todo por completo y tener todo en regla
+          por favor asegúrese de cerrar todo por completo y tener todo en regla
           para poder continuar con el examen. Recuerde que el uso de software no
-          permitidos es causal de anulacion del examen.
+          permitidos es causal de anulación del examen.
         </h1>
       ) : (
         <></>
