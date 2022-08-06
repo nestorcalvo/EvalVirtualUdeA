@@ -14,7 +14,7 @@
     },
     "main": "public/electron.js",
     "name": "evalvirtual-udea",
-    "productName": "EvalVirtualUdea 2022v2",
+    "productName": "EvalVirtualUdea 2022v2 Pointing to develop",
     "version": "2.1.0",
     "private": true,
     "files": [
@@ -42,6 +42,8 @@
         "enumerate-devices": "^1.1.1",
         "eslint-plugin-react-hooks": "^4.1.0-rc.0",
         "face-api.js": "^0.9.1",
+        "find-process": "^1.4.7",
+        "fkill": "^8.0.1",
         "form-data": "^4.0.0",
         "full-powershell": "1.4.0",
         "jquery": "^3.5.1",

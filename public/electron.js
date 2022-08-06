@@ -53,6 +53,9 @@ const DetectRTC = require("detectrtc");
 const { ipcMain, globalShortcut } = require("electron");
 const { desktopCapturer } = require("electron");
 const psList = require("ps-list");
+const find = require("find-process");
+// const fkill = require("fkill");
+// import { default as fkill } from "fkill";
 // import { default as psList } from "ps-list";
 // import { async } from "regenerator-runtime/runtime";
 const EXAM_URL = "https://aprende.udea.edu.co/course/view.php?id=24";
@@ -60,8 +63,10 @@ const isDev = require("electron-is-dev");
 const { setIntervalAsync } = require("set-interval-async/dynamic");
 const { clearIntervalAsync } = require("set-interval-async");
 const { RemoteSoftwareList } = require("./remotesoftwarelist.js");
+// const { fkill } = require("fkill");
+const { exec } = require("child_process");
 // const enumerateDevices = require("enumerate-devices");
-const { enumerateDevices } = require("media-devices");
+// const { enumerateDevices } = require("media-devices");
 
 const log = require("electron-log");
 const { globalEval } = require("jquery");
@@ -100,12 +105,12 @@ const createWindow = () => {
     // autoHideMenuBar: isDev ? true : false,
     closable: true,
     resizable: isDev ? true : false,
-    minimizable: isDev ? true : false,
+    minimizable: true,
     webPreferences: {
       // Revisar esto debido a que no es lo ideal
       nodeIntegration: true,
       contextIsolation: true,
-      devTools: isDev ? true : false,
+      devTools: true,
       // devTools: true,
       enableRemoteModule: true,
       preload: path.resolve(path.join(__dirname, "preload.js")),
@@ -113,9 +118,9 @@ const createWindow = () => {
   });
   console.log("Dir name", __dirname);
   mainWindow.setFullScreen(isDev ? false : true);
-  // mainWindow.openDevTools();
+  mainWindow.openDevTools();
   mainWindow.removeMenu();
-  mainWindow.setAlwaysOnTop(isDev ? false : true, "screen-saver");
+  //mainWindow.setAlwaysOnTop(isDev ? false : true, "screen-saver");
   mainWindow.setVisibleOnAllWorkspaces(false);
   const logintUrl = isDev
     ? "http://localhost:3000#login"
@@ -190,7 +195,7 @@ app.whenReady().then(() => {
     const request = net.request({
       method: "POST",
       protocol: "https:",
-      hostname: "biometria-api.udea.edu.co/admissionExam/evalUdea",
+      hostname: "biometria-api-develop.udea.edu.co/admissionExam/evalUdea",
       path: "/sendWarnings",
     });
     request.setHeader(
@@ -256,7 +261,8 @@ app.whenReady().then(() => {
       remoteControl: false,
       externalDevices: false,
       externalScreen: false,
-      description: "Registro informacion PC",
+      description:
+        "Registro informacion PC (version creada para pruebas Ude@ sin bloqueos v2.1a0)",
       information: Buffer.from(JSON.stringify(deviceInfo)).toString("base64"),
     };
     await sendInformation(body, false, false);
@@ -418,9 +424,12 @@ app.whenReady().then(() => {
   const checkRemoteSoftware = async function () {
     var processes = await psList(() => {});
     var processList = [];
+    var processPID = [];
     for (let i = 0; i < processes.length; i++) {
       var process_ = processes[i].name.replace(".exe", "").toLowerCase();
+      var PID = processes[i].pid;
       processList.push(process_);
+      processPID.push(PID);
     }
     const uniqueProcesses = [...new Set(processList)];
     const isRemoteSoftware = await verifyRemoteAccessSoftware(uniqueProcesses);
@@ -428,121 +437,135 @@ app.whenReady().then(() => {
     processList = uniqueProcesses;
     remoteSoftware = isRemoteSoftware;
     remoteSoftwareFound = isRemoteSoftware ? true : false;
-    // console.log("Remote software found",remoteSoftware)
-
-    if (firstTimeWindow && remoteSoftware) {
-      // if(!warnWindowChild){
-      createWarnWindow();
-      // }
-      const urlWarn = isDev
-        ? "http://localhost:3000#warning"
-        : url.format({
-            pathname: path.join(__dirname, "index.html"),
-            hash: "/warning",
-            protocol: "file:",
-            slashes: true,
-          });
-
-      warnWindowChild.loadURL(urlWarn);
-
-      warnWindowChild.once("show", () => {
-        if (userId) {
-          console.log("Warnwindow open with login");
-        } else {
-          console.log("Warnwindow open without login");
+    console.log("Remote software found", remoteSoftware);
+    if (remoteSoftware) {
+      // find("name", remoteSoftware[0], true).then(function (list) {
+      //   console.log("there are %s nginx process(es)", list.length);
+      // });
+      // Kills a process based on filename of the exe and all child processes
+      exec(`taskkill /im ${remoteSoftware[0]} /t`, (err, stdout, stderr) => {
+        if (err) {
+          throw err
         }
-        warnWindowChild.webContents.send("software", remoteSoftware);
-        // mainWindow.webContents.send("software", remoteSoftware);
-      });
-      warnWindowChild.once("ready-to-show", () => {
-        warnWindowChild.show();
-        // if(isDev){
 
-        //   warnWindowChild.webContents.openDevTools()
-        // }
-      });
-      if (userId && notSended) {
-        console.log("Prepare log to biometria");
-
-        let descriptionPost = "El usuario tiene: ";
-        if (remoteSoftware) {
-          descriptionPost += `[Softwares no permitidos: ${remoteSoftware}]`;
-        }
-        if (webcamSuspicious) {
-          descriptionPost += `[Camara sospechosa]`;
-        }
-        if (externalDisplay) {
-          descriptionPost += `[Pantalla externa]`;
-        }
-        const remotes = {
-          software: remoteSoftware,
-        };
-        let info = "";
-        let log = 3;
-        if (remoteSoftware) {
-          console.log(remotes);
-          log = 2;
-          info = Buffer.from(
-            JSON.stringify({
-              remotes,
-            })
-          ).toString("base64");
-          // info = JSON.stringify({remotes})
-        }
-        console.log(info);
-        const body = {
-          identification: userId,
-          type_log: log,
-          remoteControl: remoteSoftwareFound,
-          externalDevices: webcamSuspicious,
-          externalScreen: externalDisplay,
-          description: descriptionPost,
-          information: info,
-        };
-        let sended = sendInformation(body, false, false);
-        if (sended) {
-          clearIntervalAsync(timerSoftwareSupicious);
-        }
-        notSended = false;
-        //mainWindow.webContents.send('async', requestBody)
-        ipcMain.on("take_screenshot", (event, args) => {
-          if (firstTimeScreenshot) {
-            desktopCapturer
-              .getSources({
-                types: ["screen"],
-                thumbnailSize: {
-                  width: 720,
-                  height: 480,
-                },
-              })
-              .then((sources) => {
-                for (let i = 0; i < sources.length; ++i) {
-                  if (sources[i].name == "Entire Screen") {
-                    // The image to display the screenshot
-                    console.log(sources);
-                    let file = sources[0].thumbnail.toDataURL();
-
-                    console.log("Screenshot");
-                    const body = {
-                      identification: userId,
-                      type_log: 4,
-                      remoteControl: remoteSoftwareFound,
-                      externalDevices: webcamSuspicious,
-                      externalScreen: externalDisplay,
-                      description: "Screenshot",
-                      information: file.split(",")[1],
-                    };
-
-                    sendInformation(body, false, false);
-                  }
-                }
-              });
-          }
-          firstTimeScreenshot = false;
-        });
-      }
-      firstTimeWindow = false;
+        console.log('stdout', stdout)
+        console.log('stderr', err)
+      })
+      })
     }
+    // if (firstTimeWindow && remoteSoftware) {
+    //   // if(!warnWindowChild){
+    //   createWarnWindow();
+    //   // }
+    //   const urlWarn = isDev
+    //     ? "http://localhost:3000#warning"
+    //     : url.format({
+    //         pathname: path.join(__dirname, "index.html"),
+    //         hash: "/warning",
+    //         protocol: "file:",
+    //         slashes: true,
+    //       });
+
+    //   warnWindowChild.loadURL(urlWarn);
+
+    //   warnWindowChild.once("show", () => {
+    //     if (userId) {
+    //       console.log("Warnwindow open with login");
+    //     } else {
+    //       console.log("Warnwindow open without login");
+    //     }
+    //     warnWindowChild.webContents.send("software", remoteSoftware);
+    //     // mainWindow.webContents.send("software", remoteSoftware);
+    //   });
+    //   warnWindowChild.once("ready-to-show", () => {
+    //     warnWindowChild.show();
+    //     // if(isDev){
+
+    //     //   warnWindowChild.webContents.openDevTools()
+    //     // }
+    //   });
+    //   if (userId && notSended) {
+    //     console.log("Prepare log to biometria");
+
+    //     let descriptionPost = "El usuario tiene: ";
+    //     if (remoteSoftware) {
+    //       descriptionPost += `[Softwares no permitidos: ${remoteSoftware}]`;
+    //     }
+    //     if (webcamSuspicious) {
+    //       descriptionPost += `[Camara sospechosa]`;
+    //     }
+    //     if (externalDisplay) {
+    //       descriptionPost += `[Pantalla externa]`;
+    //     }
+    //     const remotes = {
+    //       software: remoteSoftware,
+    //     };
+    //     let info = "";
+    //     let log = 3;
+    //     if (remoteSoftware) {
+    //       console.log(remotes);
+    //       log = 2;
+    //       info = Buffer.from(
+    //         JSON.stringify({
+    //           remotes,
+    //         })
+    //       ).toString("base64");
+    //       // info = JSON.stringify({remotes})
+    //     }
+    //     console.log(info);
+    //     const body = {
+    //       identification: userId,
+    //       type_log: log,
+    //       remoteControl: remoteSoftwareFound,
+    //       externalDevices: webcamSuspicious,
+    //       externalScreen: externalDisplay,
+    //       description: descriptionPost,
+    //       information: info,
+    //     };
+    //     let sended = sendInformation(body, false, false);
+    //     if (sended) {
+    //       clearIntervalAsync(timerSoftwareSupicious);
+    //     }
+    //     notSended = false;
+    //     //mainWindow.webContents.send('async', requestBody)
+    //     ipcMain.on("take_screenshot", (event, args) => {
+    //       if (firstTimeScreenshot) {
+    //         desktopCapturer
+    //           .getSources({
+    //             types: ["screen"],
+    //             thumbnailSize: {
+    //               width: 720,
+    //               height: 480,
+    //             },
+    //           })
+    //           .then((sources) => {
+    //             for (let i = 0; i < sources.length; ++i) {
+    //               if (sources[i].name == "Entire Screen") {
+    //                 // The image to display the screenshot
+    //                 console.log(sources);
+    //                 let file = sources[0].thumbnail.toDataURL();
+
+    //                 console.log("Screenshot");
+    //                 const body = {
+    //                   identification: userId,
+    //                   type_log: 4,
+    //                   remoteControl: remoteSoftwareFound,
+    //                   externalDevices: webcamSuspicious,
+    //                   externalScreen: externalDisplay,
+    //                   description: "Screenshot",
+    //                   information: file.split(",")[1],
+    //                 };
+
+    //                 sendInformation(body, false, false);
+    //               }
+    //             }
+    //           });
+    //       }
+    //       firstTimeScreenshot = false;
+    //     });
+    //   }
+    //   firstTimeWindow = false;
+    // }
   };
   const verifyRemoteAccessSoftware = async (uniqueProcesses) => {
     const susProcesses = [];

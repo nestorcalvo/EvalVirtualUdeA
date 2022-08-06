@@ -5,21 +5,24 @@ export const VERSION = "v2.1.0";
 // export const BASE_URL = 'http://localhost:8090/bio-api'
 // export const BASE_URL = 'http://arquimedes.udea.edu.co:8096/bio-api'
 // export const BASE_URL = 'https://api.ingeniaudea.co/bio-api'
-export const BASE_URL = "http://localhost:9002/watchdog";
+export const BASE_URL =
+  "https://biometria-api-develop.udea.edu.co/admissionExam/evalUdea";
 export const BASE_URL2 = "http://localhost:9002/watchdog";
 // export const BACK_URL = 'https://a03c0032-5696-4b2b-83b6-3ae4dc91ff1f.mock.pstmn.io/watchdog'
-// export const BACK_URL = 'https://biometria-api.udea.edu.co/admissionExam/evalUdea'
 export const BACK_URL =
-  "https://biometria-api.udea.edu.co/admissionExam/evalUdea";
+  "https://biometria-api-develop.udea.edu.co/admissionExam/evalUdea";
+// export const BACK_URL =
+//   "https://biometria-api.udea.edu.co/admissionExam/evalUdea";
 // export const COHORT_NUMBER = "20201PRENUEANT1";
 // Test only
 
 // COOKIES
 export const COOKIE_TOKEN = "tokenEvalVirtual";
 export const COOKIE_MAC = "macEvalVirtual";
-export const COHORT_NUMBER = "20222PRENUEANT1";
-//20222PRENUEANT1
-export const COHORT = "20222PRENUEANT1";
+// export const COHORT_NUMBER = "20222PRENUEANT1";
+// export const COHORT = "20222PRENUEANT1";
+export const COHORT_NUMBER = "20211";
+export const COHORT = "20211";
 export const BIOMETRIA_URL =
   "https://480c7a95-d41f-4105-a287-d391fdec460e.mock.pstmn.io/";
 
