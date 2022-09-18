@@ -438,21 +438,21 @@ app.whenReady().then(() => {
     remoteSoftware = isRemoteSoftware;
     remoteSoftwareFound = isRemoteSoftware ? true : false;
     console.log("Remote software found", remoteSoftware);
-    if (remoteSoftware) {
-      // find("name", remoteSoftware[0], true).then(function (list) {
-      //   console.log("there are %s nginx process(es)", list.length);
-      // });
-      // Kills a process based on filename of the exe and all child processes
-      exec(`taskkill /im ${remoteSoftware[0]} /t`, (err, stdout, stderr) => {
-        if (err) {
-          throw err
-        }
+    // if (remoteSoftware) {
+    //   // find("name", remoteSoftware[0], true).then(function (list) {
+    //   //   console.log("there are %s nginx process(es)", list.length);
+    //   // });
+    //   // Kills a process based on filename of the exe and all child processes
+    //   exec(`taskkill /im ${remoteSoftware[0]} /t`, (err, stdout, stderr) => {
+    //     if (err) {
+    //       throw err
+    //     }
 
-        console.log('stdout', stdout)
-        console.log('stderr', err)
-      })
-      })
-    }
+    //     console.log('stdout', stdout)
+    //     console.log('stderr', err)
+    //   })
+    //   })
+    // }
     // if (firstTimeWindow && remoteSoftware) {
     //   // if(!warnWindowChild){
     //   createWarnWindow();
