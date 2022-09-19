@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BACK_URL_PRODUCTION, BACK_URL_DEV, TOKEN } from "./utils/constantes";
 const instance = axios.create({
-  baseURL: BACK_URL_DEV,
+  baseURL: BACK_URL_PRODUCTION,
   headers: {
     "Token-Security": TOKEN,
     "Access-Control-Allow-Origin": "*",

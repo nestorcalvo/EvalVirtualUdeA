@@ -8,7 +8,7 @@ module.exports = {
     "CloudBerry Remote Assistant",
     "chrome",
     // "firefox",
-    "msedge",
+    // "msedge",
     "discord",
     "edge",
     "safari",

@@ -2,7 +2,12 @@
     "description": "Aplicación para control de evaluaciones virtuales de la Universidad de Antioquia",
     "author": "Universidad de Antioquia",
     "build": {
-        "appId": "co.edu.udea.evalvirtual"
+        "appId": "co.edu.udea.evalvirtual",
+        "win": {
+            "publish": [
+                "github"
+            ]
+        }
     },
     "win": {
         "icon": "public/icons/png/notas.png",
@@ -15,7 +20,7 @@
     "main": "public/electron.js",
     "name": "evalvirtual-udea",
     "productName": "EvalVirtualUdea 2022v2 Pointing to develop",
-    "version": "2.1.0",
+    "version": "0.2.0",
     "private": true,
     "files": [
         "*.js",
@@ -65,6 +70,7 @@
         "systeminformation": "^5.12.6",
         "tmp": "^0.2.1",
         "tmp-promise": "^3.0.2",
+        "update-electron-app": "^2.0.1",
         "webcamjs": "^1.0.26"
     },
     "scripts": {
@@ -75,6 +81,7 @@
         "electron-build": "electron-builder --ia32",
         "release": "yarn react-build && electron-builder --publish=always",
         "build": "yarn react-build && yarn electron-build",
+        "build:publish": "set GH_token = ${ENV.GH_TOKEN} && react-scripts build && electron-builder --win --publish always",
         "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron --trace-warnings .\""
     },
     "browserslist": {

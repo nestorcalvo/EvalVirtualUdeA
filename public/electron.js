@@ -53,7 +53,8 @@ const DetectRTC = require("detectrtc");
 const { ipcMain, globalShortcut } = require("electron");
 const { desktopCapturer } = require("electron");
 const psList = require("ps-list");
-const find = require("find-process");
+const fkill = require("fkill");
+const si = require("systeminformation");
 // const fkill = require("fkill");
 // import { default as fkill } from "fkill";
 // import { default as psList } from "ps-list";
@@ -195,7 +196,8 @@ app.whenReady().then(() => {
     const request = net.request({
       method: "POST",
       protocol: "https:",
-      hostname: "biometria-api-develop.udea.edu.co/admissionExam/evalUdea",
+      hostname: "biometria-api.udea.edu.co/admissionExam/evalUdea",
+      // hostname: "biometria-api-develop.udea.edu.co/admissionExam/evalUdea",
       path: "/sendWarnings",
     });
     request.setHeader(
@@ -299,6 +301,7 @@ app.whenReady().then(() => {
       kernel: os.version(),
       freemem: os.freemem(),
     };
+    console.log(deviceInfo);
     if (os.type() === "Darwin") {
       checkCamera();
     }
@@ -675,8 +678,9 @@ app.whenReady().then(() => {
   });
   mainWindow.once("ready-to-show", () => {
     console.log("Apertura de checkeo");
+    getDeviceInfo();
     timerSoftwareSupicious = setIntervalAsync(checkRemoteSoftware, 1000);
-    timerExtraScreens = setIntervalAsync(getScreenInfo, 1000);
+    // timerExtraScreens = setIntervalAsync(getScreenInfo, 1000);
     // timerExtraWebcam = setIntervalAsync(getWebcamInfo, 1000);
   });
   mainWindow.on("close", () => {
@@ -753,35 +757,3 @@ app.on("activate", () => {
     createWindow();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
-
-// const getNetworkDataForThisIP = () => {
-//   const networkInterfaces = os.networkInterfaces();
-//   const selectedInterfaceData = [];
-//   Object.keys(networkInterfaces).forEach((NetworkID, index, obj) => {
-//     networkInterfaces[NetworkID].forEach((data) => {
-//       if (
-//         data.family === "IPv4" &&
-//         data.internal === false &&
-//         data.address !== "127.0.0.1"
-//       ) {
-//         // I created new Object because the NetworkID is not provided in the 'data' object
-//         selectedInterfaceData.push({
-//           network: NetworkID,
-//           address: data.address,
-//           netmask: data.netmask,
-//           family: data.family,
-//           mac: data.mac,
-//         });
-//       }
-//     });
-//   });
-//   return selectedInterfaceData;
-// };
-
-// const getMarAddress = () => {
-//   const data = getNetworkDataForThisIP();
-//   global.macInfo = data;
-// };
