@@ -596,9 +596,12 @@ app.whenReady().then(() => {
         console.log("Close software");
         if (killSignal) {
           (async () => {
-            await fkill(softwareToKill);
+            // softwareToKill
+            await fkill(softwareToKill, { force: "true" });
             console.log("Killed process");
-          })();
+          })().catch((err) => {
+            console.log(err);
+          });
           killSignal = false;
         }
       });
