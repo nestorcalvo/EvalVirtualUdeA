@@ -200,9 +200,16 @@ export default function WarningPage() {
 
   setTimeout(() => {
     if (softwareList !== "") {
+      console.log("Tomar pantallazo");
       window.api.request("take_screenshot");
     }
   }, 10000);
+
+  setTimeout(() => {
+    if (softwareList !== "") {
+      window.api.request("close_software");
+    }
+  }, 15000);
 
   let countdownValue = 20; //Valor en segundos
   return (

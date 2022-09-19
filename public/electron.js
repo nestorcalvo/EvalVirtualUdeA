@@ -80,6 +80,7 @@ let remoteSoftware, remoteSoftwareFound;
 let mainWindow, warnWindowChild;
 let userId, macInfo, deviceInfo;
 let notSended = true;
+let killSignal = true;
 let firstTimeWindow = true;
 let firstTimeScreenshot = true;
 let webcamSuspicious = false;
@@ -164,17 +165,27 @@ const createWarnWindow = () => {
   warnWindowChild.setContentProtection(true);
   warnWindowChild.on("close", () => {
     if (mainWindow) {
-      mainWindow.destroy();
-      mainWindow.close();
-      mainWindow = null;
-    }
-  });
-  warnWindowChild.once("closed", () => {
-    if (mainWindow) {
-      mainWindow.destroy();
-      mainWindow.close();
-
-      mainWindow = null;
+      console.log("warnWindow is about to be closed");
+      console.log(userId);
+      console.log(firstTimeClose);
+      if (userId && firstTimeClose) {
+        console.log("Envio de cierre");
+        const body = {
+          identification: userId,
+          type_log: 1,
+          remoteControl: false,
+          externalDevices: false,
+          externalScreen: false,
+          description: "Aplicación cerrada",
+          information: "",
+        };
+        console.log("Entrada cerrar app");
+        let sendQuit = sendInformation(body, true, true);
+      }
+      warnWindowChild = null;
+      // mainWindow.destroy();
+      // mainWindow.close();
+      // mainWindow = null;
     }
   });
 };
@@ -254,6 +265,7 @@ app.whenReady().then(() => {
         });
         console.log("Evento fin send information");
         if (response.statusCode == 200) {
+          console.log("Codigo de respuesta 200");
           if (saveInfoLocalLog) {
             console.log(response.statusCode);
             console.log("Salida");
@@ -319,7 +331,7 @@ app.whenReady().then(() => {
       kernel: os.version(),
       freemem: os.freemem(),
     };
-    console.log(deviceInfo);
+    // console.log(deviceInfo);
     if (os.type() === "Darwin") {
       checkCamera();
     }
@@ -458,135 +470,143 @@ app.whenReady().then(() => {
     processList = uniqueProcesses;
     remoteSoftware = isRemoteSoftware;
     remoteSoftwareFound = isRemoteSoftware ? true : false;
-    console.log("Remote software found", remoteSoftware);
-    // if (remoteSoftware) {
-    //   // find("name", remoteSoftware[0], true).then(function (list) {
-    //   //   console.log("there are %s nginx process(es)", list.length);
-    //   // });
-    //   // Kills a process based on filename of the exe and all child processes
-    //   exec(`taskkill /im ${remoteSoftware[0]} /t`, (err, stdout, stderr) => {
-    //     if (err) {
-    //       throw err
-    //     }
+    var softwareToKill = [];
+    for (let i = 0; i < remoteSoftware.length; i++) {
+      softwareToKill.push(remoteSoftware[i] + ".exe");
+    }
+    console.log("Remote software found", softwareToKill);
+    if (firstTimeWindow && remoteSoftware) {
+      console.log("Creacion warnwindow");
+      if (!warnWindowChild) {
+        createWarnWindow();
+      }
+      const urlWarn = isDev
+        ? "http://localhost:3000#warning"
+        : url.format({
+            pathname: path.join(__dirname, "index.html"),
+            hash: "/warning",
+            protocol: "file:",
+            slashes: true,
+          });
 
-    //     console.log('stdout', stdout)
-    //     console.log('stderr', err)
-    //   })
-    //   })
-    // }
-    // if (firstTimeWindow && remoteSoftware) {
-    //   // if(!warnWindowChild){
-    //   createWarnWindow();
-    //   // }
-    //   const urlWarn = isDev
-    //     ? "http://localhost:3000#warning"
-    //     : url.format({
-    //         pathname: path.join(__dirname, "index.html"),
-    //         hash: "/warning",
-    //         protocol: "file:",
-    //         slashes: true,
-    //       });
+      warnWindowChild.loadURL(urlWarn);
 
-    //   warnWindowChild.loadURL(urlWarn);
+      warnWindowChild.once("show", () => {
+        if (userId) {
+          console.log("Warnwindow open with login");
+        } else {
+          console.log("Warnwindow open without login");
+        }
+        warnWindowChild.webContents.send("software", remoteSoftware);
+        // mainWindow.webContents.send("software", remoteSoftware);
+      });
+      warnWindowChild.once("ready-to-show", () => {
+        warnWindowChild.show();
+        // if(isDev){
 
-    //   warnWindowChild.once("show", () => {
-    //     if (userId) {
-    //       console.log("Warnwindow open with login");
-    //     } else {
-    //       console.log("Warnwindow open without login");
-    //     }
-    //     warnWindowChild.webContents.send("software", remoteSoftware);
-    //     // mainWindow.webContents.send("software", remoteSoftware);
-    //   });
-    //   warnWindowChild.once("ready-to-show", () => {
-    //     warnWindowChild.show();
-    //     // if(isDev){
+        //   warnWindowChild.webContents.openDevTools()
+        // }
+      });
+      if (userId && notSended) {
+        console.log("Prepare log to biometria");
 
-    //     //   warnWindowChild.webContents.openDevTools()
-    //     // }
-    //   });
-    //   if (userId && notSended) {
-    //     console.log("Prepare log to biometria");
+        let descriptionPost = "El usuario tiene: ";
+        if (remoteSoftware) {
+          descriptionPost += `[Softwares no permitidos: ${remoteSoftware}]`;
+        }
+        if (webcamSuspicious) {
+          descriptionPost += `[Camara sospechosa]`;
+        }
+        if (externalDisplay) {
+          descriptionPost += `[Pantalla externa]`;
+        }
+        const remotes = {
+          software: remoteSoftware,
+        };
+        let info = "";
+        let log = 3;
+        if (remoteSoftware) {
+          console.log(remotes);
+          log = 2;
+          info = Buffer.from(
+            JSON.stringify({
+              remotes,
+            })
+          ).toString("base64");
+          // info = JSON.stringify({remotes})
+        }
+        console.log(info);
+        const body = {
+          identification: userId,
+          type_log: log,
+          remoteControl: remoteSoftwareFound,
+          externalDevices: webcamSuspicious,
+          externalScreen: externalDisplay,
+          description: descriptionPost,
+          information: info,
+        };
+        let sended = sendInformation(body, false, false);
+        // if (sended) {
+        //   clearIntervalAsync(timerSoftwareSupicious);
+        // }
+        notSended = false;
+        //mainWindow.webContents.send('async', requestBody)
+        console.log("Preparacion toma de pantallazo");
+        ipcMain.on("take_screenshot", (event, args) => {
+          console.log("Verificacion pantallazo");
+          if (firstTimeScreenshot) {
+            desktopCapturer
+              .getSources({
+                types: ["screen"],
+                thumbnailSize: {
+                  width: 720,
+                  height: 480,
+                },
+              })
+              .then((sources) => {
+                console.log("Pantallazo");
+                for (let i = 0; i < sources.length; ++i) {
+                  console.log(sources[i].name);
+                  if (sources[i].name == "Entire Screen") {
+                    // The image to display the screenshot
+                    console.log(sources);
+                    let file = sources[0].thumbnail.toDataURL();
 
-    //     let descriptionPost = "El usuario tiene: ";
-    //     if (remoteSoftware) {
-    //       descriptionPost += `[Softwares no permitidos: ${remoteSoftware}]`;
-    //     }
-    //     if (webcamSuspicious) {
-    //       descriptionPost += `[Camara sospechosa]`;
-    //     }
-    //     if (externalDisplay) {
-    //       descriptionPost += `[Pantalla externa]`;
-    //     }
-    //     const remotes = {
-    //       software: remoteSoftware,
-    //     };
-    //     let info = "";
-    //     let log = 3;
-    //     if (remoteSoftware) {
-    //       console.log(remotes);
-    //       log = 2;
-    //       info = Buffer.from(
-    //         JSON.stringify({
-    //           remotes,
-    //         })
-    //       ).toString("base64");
-    //       // info = JSON.stringify({remotes})
-    //     }
-    //     console.log(info);
-    //     const body = {
-    //       identification: userId,
-    //       type_log: log,
-    //       remoteControl: remoteSoftwareFound,
-    //       externalDevices: webcamSuspicious,
-    //       externalScreen: externalDisplay,
-    //       description: descriptionPost,
-    //       information: info,
-    //     };
-    //     let sended = sendInformation(body, false, false);
-    //     if (sended) {
-    //       clearIntervalAsync(timerSoftwareSupicious);
-    //     }
-    //     notSended = false;
-    //     //mainWindow.webContents.send('async', requestBody)
-    //     ipcMain.on("take_screenshot", (event, args) => {
-    //       if (firstTimeScreenshot) {
-    //         desktopCapturer
-    //           .getSources({
-    //             types: ["screen"],
-    //             thumbnailSize: {
-    //               width: 720,
-    //               height: 480,
-    //             },
-    //           })
-    //           .then((sources) => {
-    //             for (let i = 0; i < sources.length; ++i) {
-    //               if (sources[i].name == "Entire Screen") {
-    //                 // The image to display the screenshot
-    //                 console.log(sources);
-    //                 let file = sources[0].thumbnail.toDataURL();
+                    console.log("Screenshot");
+                    const body = {
+                      identification: userId,
+                      type_log: 4,
+                      remoteControl: remoteSoftwareFound,
+                      externalDevices: webcamSuspicious,
+                      externalScreen: externalDisplay,
+                      description: "Screenshot",
+                      information: file.split(",")[1],
+                    };
 
-    //                 console.log("Screenshot");
-    //                 const body = {
-    //                   identification: userId,
-    //                   type_log: 4,
-    //                   remoteControl: remoteSoftwareFound,
-    //                   externalDevices: webcamSuspicious,
-    //                   externalScreen: externalDisplay,
-    //                   description: "Screenshot",
-    //                   information: file.split(",")[1],
-    //                 };
+                    sendInformation(body, false, false);
+                  }
+                }
+              });
+          }
+          firstTimeScreenshot = false;
+        });
+      }
 
-    //                 sendInformation(body, false, false);
-    //               }
-    //             }
-    //           });
-    //       }
-    //       firstTimeScreenshot = false;
-    //     });
-    //   }
-    //   firstTimeWindow = false;
-    // }
+      ipcMain.on("close_software", (event, args) => {
+        console.log("Close software");
+        if (killSignal) {
+          (async () => {
+            await fkill(softwareToKill);
+            console.log("Killed process");
+          })();
+          killSignal = false;
+        }
+      });
+      firstTimeWindow = false;
+    } else {
+      firstTimeWindow = true;
+      killSignal = true;
+    }
   };
   const verifyRemoteAccessSoftware = async (uniqueProcesses) => {
     const susProcesses = [];
@@ -602,20 +622,7 @@ app.whenReady().then(() => {
       return susProcesses;
     }
   };
-  const sendClosedApp = async (userId) => {
-    // return new Promise(function (resolve, reject) {
-    //   const body = {
-    //     identification: userId,
-    //     type_log: 1,
-    //     remoteControl: false,
-    //     externalDevices: false,
-    //     externalScreen: false,
-    //     description: "Aplicación cerrada",
-    //     information: "",
-    //   };
-    //   console.log("Entrada a promesa");
-    //   resolve(sendInformation(body, true));
-    // });
+  const sendClosedApp = (userId) => {
     const body = {
       identification: userId,
       type_log: 1,
@@ -627,8 +634,9 @@ app.whenReady().then(() => {
     };
     console.log("Entrada cerrar app");
     let sendQuit = sendInformation(body, true, true);
+    console.log("Result from send informaiton", sendQuit);
     if (sendQuit) {
-      mainWindow.destroy();
+      // mainWindow.destroy();
       app.quit();
       return sendQuit;
     }
@@ -705,12 +713,30 @@ app.whenReady().then(() => {
     console.log("Mainwindow is about to be closed");
     if (userId && firstTimeClose) {
       console.log("Envio de cierre");
-      let quitApp = sendClosedApp(userId);
-      firstTimeClose = false;
-      if (quitApp) {
-        mainWindow.destroy();
-        app.quit();
-      }
+      const body = {
+        identification: userId,
+        type_log: 1,
+        remoteControl: false,
+        externalDevices: false,
+        externalScreen: false,
+        description: "Aplicación cerrada",
+        information: "",
+      };
+      console.log("Entrada cerrar app");
+      let sendQuit = sendInformation(body, true, true);
+      // sendClosedApp(userId)
+      //   .then((data) => {
+      //     let quitApp = data;
+      //     firstTimeClose = false;
+      //     if (quitApp) {
+      //       console.log("Cierre autorizado y enviado");
+      //       app.quit();
+      //     }
+      //   })
+      //   .catch((err) => console.log(err));
+    }
+    if (mainWindow) {
+      mainWindow.destroy();
     }
   });
 });
@@ -720,12 +746,8 @@ app.on("will-quit", () => {
 });
 app.on("before-quit", () => {
   mainWindow.removeAllListeners("close");
-  mainWindow.destroy();
+  // mainWindow.destroy();
   mainWindow.close();
-
-  if (userId) {
-    sendClosedApp(userId);
-  }
 });
 autoUpdater.on("checking-for-update", () => {
   console.log("Checking for update aviable");
@@ -737,7 +759,8 @@ autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
     buttons: ["Ok"],
     title: "Application Update",
     message: process.platform === "win32" ? releaseNotes : releaseName,
-    detail: "A new version is being downloaded.",
+    detail:
+      "Una actualización de la aplicación se está descargando y es necesaria para el uso correcto de la aplicación. Una vez terminada la descarga la apliación se reiniciará.",
   };
   dialog.showMessageBox(dialogOpts, (response) => {});
 });
@@ -747,16 +770,18 @@ autoUpdater.on("update-not-available", () => {
 autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
   const dialogOpts = {
     type: "info",
-    buttons: ["Restart", "Later"],
+    // buttons: ["Restart", "Later"],
     title: "Application Update",
     message: process.platform === "win32" ? releaseNotes : releaseName,
     detail:
-      "A new version has been downloaded. Restart the application to apply the updates.",
+      "A new version has been downloaded. The application will be restarted.",
   };
-
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.quitAndInstall();
-  });
+  setTimeout(() => {
+    autoUpdater.quitAndInstall();
+  }, 2000);
+  // dialog.showMessageBox(dialogOpts).then((returnValue) => {
+  // if (returnValue.response === 0)
+  // });
 });
 autoUpdater.on("error", (error) => {
   console.log("error");
