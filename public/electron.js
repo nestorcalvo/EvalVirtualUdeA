@@ -45,7 +45,7 @@
 // global.warnWindow_open = false;
 // require("regenerator-runtime/runtime");
 
-const { app, BrowserWindow, ipcRenderer, screen } = require("electron");
+const { app, BrowserWindow, ipcRenderer, screen, dialog } = require("electron");
 const path = require("path");
 const os = require("os");
 const url = require("url");
@@ -87,7 +87,7 @@ let externalDisplay = false;
 let firstTimeClose = true;
 
 global.software = null;
-
+console.log("Application version: ", app.getVersion());
 if (isDev) {
   console.log("Running in development");
 } else {
@@ -193,7 +193,17 @@ app.whenReady().then(() => {
   // setInterval(() => {
   //   autoUpdater.checkForUpdates();
   // }, 60000);
-  autoUpdater.checkForUpdates();
+  const updaterFeedURL = {
+    provider: "github",
+    owner: "nestorcalvo",
+    repo: "EvalUdea",
+    private: true,
+    token: "<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>",
+  };
+
+  autoUpdater.setFeedURL(updaterFeedURL);
+  autoUpdater.checkForUpdatesAndNotify();
+
   const { net } = require("electron");
   const sendInformation = (
     data,
@@ -717,7 +727,11 @@ app.on("before-quit", () => {
     sendClosedApp(userId);
   }
 });
+autoUpdater.on("checking-for-update", () => {
+  console.log("Checking for update aviable");
+});
 autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
+  console.log("Updates aviable");
   const dialogOpts = {
     type: "info",
     buttons: ["Ok"],
@@ -726,6 +740,9 @@ autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
     detail: "A new version is being downloaded.",
   };
   dialog.showMessageBox(dialogOpts, (response) => {});
+});
+autoUpdater.on("update-not-available", () => {
+  console.log("Update not available");
 });
 autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
   const dialogOpts = {
@@ -740,6 +757,11 @@ autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
   dialog.showMessageBox(dialogOpts).then((returnValue) => {
     if (returnValue.response === 0) autoUpdater.quitAndInstall();
   });
+});
+autoUpdater.on("error", (error) => {
+  console.log("error");
+  console.log(error.message);
+  console.log(error.stack);
 });
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -761,24 +783,6 @@ app.on("window-all-closed", () => {
   // }
 
   app.quit();
-});
-app.whenReady().then((event) => {
-  // Register a 'CommandOrControl+X' shortcut listener.
-  // let command = CommandList.map((command)=>command)
-  // console.log(command)
-  // let ret = globalShortcut.register("PrintScreen", (shortcut) => {
-  //   console.log(`PrintScreen is pressed`)
-  // })
-  // if (!ret) {
-  //   console.log('registration failed')
-  // }
-  // let ret2 = globalShortcut.register("Super+G", (shortcut) => {
-  //   console.log(`Super+G is pressed`)
-  // })
-  // if (!ret2) {
-  //   console.log('registration failed Super+G')
-  // }
-  // console.log(globalShortcut.isRegistered(item))
 });
 
 app.on("activate", () => {

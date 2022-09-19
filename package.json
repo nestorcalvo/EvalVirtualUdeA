@@ -7,14 +7,11 @@
             {
                 "provider": "github",
                 "owner": "nestorcalvo",
-                "repo": "EvalUdea"
+                "repo": "EvalUdea",
+                "private":true,
+                "token":"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"
             }
-        ],
-        "win": {
-            "publish": [
-                "github"
-            ]
-        }
+        ]
     },
     "win": {
         "icon": "public/icons/png/notas.png",
@@ -27,7 +24,7 @@
     "main": "public/electron.js",
     "name": "evalvirtual-udea",
     "productName": "EvalVirtualUdea 2022v2 Pointing to develop",
-    "version": "0.2.4",
+    "version": "0.3.0",
     "private": true,
     "files": [
         "*.js",
@@ -89,7 +86,7 @@
         "electron-build": "electron-builder --ia32",
         "release": "yarn react-build && electron-builder --publish=always",
         "build": "yarn react-build && yarn electron-build",
-        "build:publish": "react-scripts build && electron-builder --win --publish always",
+        "build:publish": "react-scripts build && electron-builder --publish always",
         "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron --trace-warnings .\""
     },
     "browserslist": {
