@@ -193,7 +193,7 @@ app.whenReady().then(() => {
   // setInterval(() => {
   //   autoUpdater.checkForUpdates();
   // }, 60000);
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdates();
   const { net } = require("electron");
   const sendInformation = (
     data,
@@ -716,6 +716,16 @@ app.on("before-quit", () => {
   if (userId) {
     sendClosedApp(userId);
   }
+});
+autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
+  const dialogOpts = {
+    type: "info",
+    buttons: ["Ok"],
+    title: "Application Update",
+    message: process.platform === "win32" ? releaseNotes : releaseName,
+    detail: "A new version is being downloaded.",
+  };
+  dialog.showMessageBox(dialogOpts, (response) => {});
 });
 autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
   const dialogOpts = {
