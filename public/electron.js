@@ -55,6 +55,7 @@ const { desktopCapturer } = require("electron");
 const psList = require("ps-list");
 const fkill = require("fkill");
 const si = require("systeminformation");
+const { autoUpdater } = require("electron-updater");
 // const fkill = require("fkill");
 // import { default as fkill } from "fkill";
 // import { default as psList } from "ps-list";
@@ -186,6 +187,7 @@ if (process.platform == "darwin") {
 // Some APIs can only be used after this event occurs.
 app.on("ready", createWindow);
 app.whenReady().then(() => {
+  autoUpdater.checkForUpdatesAndNotify();
   const { net } = require("electron");
   const sendInformation = (
     data,

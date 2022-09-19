@@ -27,7 +27,7 @@ export const LoginForm = ({ onSubmit, title, error, loading }) => {
     value: "",
     name: "identificacion",
     type: "number",
-    placeholder: "Ingrese su usuario",
+    placeholder: "Ingrese su usuario porfavor",
   });
 
   const verifyForm = async (e) => {
