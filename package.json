@@ -27,7 +27,7 @@
     "main": "public/electron.js",
     "name": "evalvirtual-udea",
     "productName": "EvalVirtualUdea 2022v2 Pointing to develop",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "private": true,
     "files": [
         "*.js",
