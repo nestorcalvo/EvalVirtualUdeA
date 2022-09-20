@@ -166,9 +166,6 @@ const createWarnWindow = () => {
   warnWindowChild.on("close", () => {
     if (mainWindow) {
       console.log("warnWindow is about to be closed");
-      console.log(userId);
-      console.log(firstTimeClose);
-
       // warnWindowChild = null;
       // if (softwareNotClose != '[ 'msedge']')
       console.log("Software:", softwareNotClose);
