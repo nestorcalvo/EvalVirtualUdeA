@@ -82,6 +82,8 @@ let firstTimeWindow = true;
 let firstTimeScreenshot = true;
 let webcamSuspicious = false;
 let externalDisplay = false;
+global.softwareNotClose = "";
+global.extraScreen = false;
 let firstTimeClose = true;
 
 global.software = null;
@@ -119,7 +121,7 @@ const createWindow = () => {
   });
   console.log("Dir name", __dirname);
   mainWindow.setFullScreen(isDev ? false : true);
-  mainWindow.openDevTools();
+  // mainWindow.openDevTools();
   mainWindow.removeMenu();
   mainWindow.setAlwaysOnTop(isDev ? false : true, "screen-saver");
   mainWindow.setVisibleOnAllWorkspaces(false);
@@ -166,24 +168,34 @@ const createWarnWindow = () => {
       console.log("warnWindow is about to be closed");
       console.log(userId);
       console.log(firstTimeClose);
-      if (userId && firstTimeClose) {
-        console.log("Envio de cierre");
-        const body = {
-          identification: userId,
-          type_log: 1,
-          remoteControl: false,
-          externalDevices: false,
-          externalScreen: false,
-          description: "Aplicación cerrada",
-          information: "",
-        };
-        console.log("Entrada cerrar app");
-        let sendQuit = sendInformation(body, true, true);
-      }
+
       // warnWindowChild = null;
-      mainWindow.destroy();
-      mainWindow.close();
-      mainWindow = null;
+      // if (softwareNotClose != '[ 'msedge']')
+      console.log("Software:", softwareNotClose);
+      console.log("Extra screen:", extraScreen);
+      if (!softwareNotClose && !extraScreen) {
+        console.log("Quitar warn");
+        warnWindowChild = null;
+      } else {
+        mainWindow.destroy();
+        mainWindow.close();
+        mainWindow = null;
+        //   if (userId && firstTimeClose) {
+        //     console.log("Envio de cierre");
+        //     const body = {
+        //       identification: userId,
+        //       type_log: 1,
+        //       remoteControl: false,
+        //       externalDevices: false,
+        //       externalScreen: false,
+        //       description: "Aplicación cerrada",
+        //       information: "",
+        //     };
+        //     console.log("Entrada cerrar app");
+        //     let sendQuit = sendInformation(body, true, true);
+        //   }
+        //   console.log("Destruir todo");
+      }
     }
   });
 };
@@ -202,16 +214,16 @@ app.whenReady().then(() => {
   // setInterval(() => {
   //   autoUpdater.checkForUpdates();
   // }, 60000);
-  const updaterFeedURL = {
-    provider: "github",
-    owner: "nestorcalvo",
-    repo: "EvalUdea",
-    private: true,
-    token: "<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>",
-  };
+  // const updaterFeedURL = {
+  //   provider: "github",
+  //   owner: "nestorcalvo",
+  //   repo: "EvalUdea",
+  //   private: true,
+  //   token: "<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>",
+  // };
 
-  autoUpdater.setFeedURL(updaterFeedURL);
-  autoUpdater.checkForUpdatesAndNotify();
+  // autoUpdater.setFeedURL(updaterFeedURL);
+  // autoUpdater.checkForUpdatesAndNotify();
 
   const { net } = require("electron");
   const sendInformation = (
@@ -291,10 +303,10 @@ app.whenReady().then(() => {
       remoteControl: false,
       externalDevices: false,
       externalScreen: false,
-      description:
-        "Registro informacion PC (version creada para pruebas Ude@ sin bloqueos v2.1a0)",
+      description: "Registro informacion PC",
       information: Buffer.from(JSON.stringify(deviceInfo)).toString("base64"),
     };
+    // (version creada para pruebas Ude@ sin bloqueos v2.1a0)
     await sendInformation(body, false, false);
   };
   const sendStartExamInfo = () => {
@@ -344,6 +356,7 @@ app.whenReady().then(() => {
         // if(!warnWindowChild){
         createWarnWindow();
         // }
+        extraScreen = true;
         const urlWarn = isDev
           ? "http://localhost:3000#warning"
           : url.format({
@@ -372,7 +385,8 @@ app.whenReady().then(() => {
         });
         if (userId && notSended) {
           console.log("Send log to biometria");
-
+          // console.log(externalDisplay);
+          console.log(respuesta);
           let descriptionPost = "El usuario tiene: ";
           if (remoteSoftware) {
             descriptionPost += `[Softwares no permitidos: ${remoteSoftware}]`;
@@ -380,10 +394,10 @@ app.whenReady().then(() => {
           if (webcamSuspicious) {
             descriptionPost += `[Camara sospechosa]`;
           }
-          if (externalDisplay) {
+          if (respuesta) {
             descriptionPost += `[Pantalla externa]`;
           }
-
+          console.log("descripcion", descriptionPost);
           let info = "";
           let log = 3;
 
@@ -392,7 +406,7 @@ app.whenReady().then(() => {
             type_log: log,
             remoteControl: remoteSoftwareFound,
             externalDevices: webcamSuspicious,
-            externalScreen: externalDisplay,
+            externalScreen: respuesta,
             description: descriptionPost,
             information: info,
           };
@@ -400,6 +414,7 @@ app.whenReady().then(() => {
           if (sended) {
             clearIntervalAsync(timerExtraScreens);
           }
+
           notSended = false;
           //mainWindow.webContents.send('async', requestBody)
           // ipcMain.on("take_screenshot", (event, args) => {
@@ -446,6 +461,7 @@ app.whenReady().then(() => {
     const externalDisplay = displays.find((display) => {
       return display.bounds.x !== 0 || display.bounds.y !== 0;
     });
+    console.log(externalDisplay);
     if (externalDisplay) {
       return true;
     } else {
@@ -467,6 +483,8 @@ app.whenReady().then(() => {
 
     processList = uniqueProcesses;
     remoteSoftware = isRemoteSoftware;
+
+    softwareNotClose = remoteSoftware;
     remoteSoftwareFound = isRemoteSoftware ? true : false;
     var softwareToKill = [];
     for (let i = 0; i < remoteSoftware.length; i++) {
@@ -562,12 +580,10 @@ app.whenReady().then(() => {
                 },
               })
               .then((sources) => {
-                console.log("Pantallazo");
                 for (let i = 0; i < sources.length; ++i) {
-                  console.log(sources[i].name);
                   if (sources[i].name == "Entire Screen") {
                     // The image to display the screenshot
-                    console.log(sources);
+                    // console.log(sources);
                     let file = sources[0].thumbnail.toDataURL();
 
                     console.log("Screenshot");
@@ -589,21 +605,28 @@ app.whenReady().then(() => {
           firstTimeScreenshot = false;
         });
       }
-
-      // ipcMain.on("close_software", (event, args) => {
-      //   console.log("Close software");
-      //   if (killSignal) {
-      //     (async () => {
-      //       // softwareToKill
-      //       await fkill(softwareToKill, { force: "true" });
-      //       console.log("Killed process");
-      //       firstTimeWindow = true;
-      //     })().catch((err) => {
-      //       console.log(err);
-      //     });
-      //     killSignal = false;
-      //   }
-      // });
+      /**
+       * Solo acabar con procesos si son msedge
+       */
+      ipcMain.on("close_software", (event, args) => {
+        console.log("Close software");
+        if (
+          killSignal &&
+          remoteSoftware.length === 1 &&
+          remoteSoftware[0] === "msedge"
+        ) {
+          (async () => {
+            // softwareToKill
+            await fkill(softwareToKill, { force: "true" });
+            console.log("Killed process");
+            firstTimeWindow = true;
+            // softwareNotClose = "noSoftware";
+          })().catch((err) => {
+            console.log(err);
+          });
+          killSignal = false;
+        }
+      });
       firstTimeWindow = false;
     } else {
       killSignal = true;
@@ -707,7 +730,7 @@ app.whenReady().then(() => {
     console.log("Apertura de checkeo");
     getDeviceInfo();
     timerSoftwareSupicious = setIntervalAsync(checkRemoteSoftware, 1000);
-    // timerExtraScreens = setIntervalAsync(getScreenInfo, 1000);
+    timerExtraScreens = setIntervalAsync(getScreenInfo, 1000);
     // timerExtraWebcam = setIntervalAsync(getWebcamInfo, 1000);
   });
   mainWindow.on("close", () => {
@@ -740,28 +763,26 @@ app.whenReady().then(() => {
       mainWindow.destroy();
     }
   });
-  // var progressBar = new ProgressBar({
-  //   text: "Preparing data...",
-  //   detail: "Wait...",
-  // });
-  // progressBar
-  //   .on("completed", function () {
-  //     console.info(`completed...`);
-  //     progressBar.detail = "Task completed. Exiting...";
-  //   })
-  //   .on("aborted", function () {
-  //     console.info(`aborted...`);
-  //   });
-
-  // // launch a task...
-  // // launchTask();
-
-  // // when task is completed, set the progress bar to completed
-  // // ps: setTimeout is used here just to simulate an interval between
-  // // the start and the end of a task
-  // setTimeout(function () {
-  //   progressBar.setCompleted();
-  // }, 3000);
+  mainWindow.once("closed", () => {
+    console.log("Mainwindow is about to be closed");
+    if (userId && firstTimeClose) {
+      console.log("Envio de cierre");
+      const body = {
+        identification: userId,
+        type_log: 1,
+        remoteControl: false,
+        externalDevices: false,
+        externalScreen: false,
+        description: "Aplicación cerrada",
+        information: "",
+      };
+      console.log("Entrada cerrar app");
+      let sendQuit = sendInformation(body, true, true);
+    }
+    if (mainWindow) {
+      mainWindow.destroy();
+    }
+  });
 });
 app.on("will-quit", () => {
   // Unregister all shortcuts.
@@ -772,48 +793,52 @@ app.on("before-quit", () => {
   // mainWindow.destroy();
   mainWindow.close();
 });
-autoUpdater.on("checking-for-update", () => {
-  console.log("Checking for update aviable");
-});
-autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
-  console.log("Updates aviable");
 
-  const dialogOpts = {
-    type: "info",
-    buttons: ["Ok"],
-    title: "Application Update",
-    message: process.platform === "win32" ? releaseNotes : releaseName,
-    detail:
-      "Una actualización de la aplicación se está descargando y es necesaria para el uso correcto de la aplicación (Se recomienda esperar). Una vez terminada la descarga la apliación se reiniciará.",
-  };
-  dialog.showMessageBox(dialogOpts, (response) => {});
-});
-autoUpdater.on("update-not-available", () => {
-  console.log("Update not available");
-});
-autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
-  const dialogOpts = {
-    type: "info",
-    // buttons: ["Restart", "Later"],
-    title: "Application Update",
-    message: process.platform === "win32" ? releaseNotes : releaseName,
-    detail:
-      "A new version has been downloaded. The application will be restarted.",
-  };
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    setTimeout(() => {
-      autoUpdater.quitAndInstall();
-    }, 1000);
-  });
-  // dialog.showMessageBox(dialogOpts).then((returnValue) => {
-  // if (returnValue.response === 0)
-  // });
-});
-autoUpdater.on("error", (error) => {
-  console.log("error");
-  console.log(error.message);
-  console.log(error.stack);
-});
+/**
+ * Updater
+ */
+// autoUpdater.on("checking-for-update", () => {
+//   console.log("Checking for update aviable");
+// });
+// autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
+//   console.log("Updates aviable");
+
+//   const dialogOpts = {
+//     type: "info",
+//     buttons: ["Ok"],
+//     title: "Application Update",
+//     message: process.platform === "win32" ? releaseNotes : releaseName,
+//     detail:
+//       "Una actualización de la aplicación se está descargando y es necesaria para el uso correcto de la aplicación (Se recomienda esperar). Una vez terminada la descarga la apliación se reiniciará.",
+//   };
+//   dialog.showMessageBox(dialogOpts, (response) => {});
+// });
+// autoUpdater.on("update-not-available", () => {
+//   console.log("Update not available");
+// });
+// autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
+//   const dialogOpts = {
+//     type: "info",
+//     // buttons: ["Restart", "Later"],
+//     title: "Application Update",
+//     message: process.platform === "win32" ? releaseNotes : releaseName,
+//     detail:
+//       "A new version has been downloaded. The application will be restarted.",
+//   };
+//   dialog.showMessageBox(dialogOpts).then((returnValue) => {
+//     setTimeout(() => {
+//       autoUpdater.quitAndInstall();
+//     }, 1000);
+//   });
+//   // dialog.showMessageBox(dialogOpts).then((returnValue) => {
+//   // if (returnValue.response === 0)
+//   // });
+// });
+// autoUpdater.on("error", (error) => {
+//   console.log("error");
+//   console.log(error.message);
+//   console.log(error.stack);
+// });
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.

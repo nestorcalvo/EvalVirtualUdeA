@@ -100,9 +100,7 @@ export default function Login() {
       .catch((error) => {
         if (error.response.status == 400) {
           console.error(error);
-          setwrongSesionInfoMessage(
-            "Usuario o contraseña incorrectos, porfavor intente de nuevo"
-          );
+          setwrongSesionInfoMessage("Usuario o contraseña incorrectos");
           // Enviar que el usuario o la contraseña estan incorrectos
         }
       });

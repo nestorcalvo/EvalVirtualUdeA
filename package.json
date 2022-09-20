@@ -11,7 +11,24 @@
                 "private": true,
                 "token": "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"
             }
-        ]
+        ],
+        "files": [
+            "*.js",
+            "build",
+            "./public/**/*",
+            "node_modules"
+        ],
+        "directories": {
+            "buildResources":"public"
+        },
+        "win": {
+            "icon": "public/icons/png/notas.png",
+            "requestedExecutionLevel": "requireAdministrator"
+        },
+        "mac": {
+            "icon": "public/icons/png/notas.png",
+            "category": "public.app-category.utilities"
+        }
     },
     "win": {
         "icon": "public/icons/png/notas.png",
@@ -23,12 +40,13 @@
     },
     "main": "public/electron.js",
     "name": "evalvirtual-udea",
-    "productName": "EvalVirtualUdea 2022v2 Pruebas Ude@",
-    "version": "0.5.0",
+    "productName": "EvalVirtualUdea 2023v1",
+    "version": "3.1.0",
     "private": true,
     "files": [
         "*.js",
         "build",
+        "./public/**/*",
         "node_modules"
     ],
     "homepage": "./",
