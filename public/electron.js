@@ -56,10 +56,7 @@ const psList = require("ps-list");
 const fkill = require("fkill");
 const si = require("systeminformation");
 const { autoUpdater } = require("electron-updater");
-// const fkill = require("fkill");
-// import { default as fkill } from "fkill";
-// import { default as psList } from "ps-list";
-// import { async } from "regenerator-runtime/runtime";
+const ProgressBar = require("electron-progressbar");
 const EXAM_URL = "https://aprende.udea.edu.co/course/view.php?id=24";
 const isDev = require("electron-is-dev");
 const { setIntervalAsync } = require("set-interval-async/dynamic");
@@ -108,7 +105,8 @@ const createWindow = () => {
     // autoHideMenuBar: isDev ? true : false,
     closable: true,
     resizable: isDev ? true : false,
-    minimizable: true,
+    minimizable: isDev ? true : false,
+
     webPreferences: {
       // Revisar esto debido a que no es lo ideal
       nodeIntegration: true,
@@ -123,7 +121,7 @@ const createWindow = () => {
   mainWindow.setFullScreen(isDev ? false : true);
   mainWindow.openDevTools();
   mainWindow.removeMenu();
-  //mainWindow.setAlwaysOnTop(isDev ? false : true, "screen-saver");
+  mainWindow.setAlwaysOnTop(isDev ? false : true, "screen-saver");
   mainWindow.setVisibleOnAllWorkspaces(false);
   const logintUrl = isDev
     ? "http://localhost:3000#login"
@@ -144,7 +142,7 @@ const createWarnWindow = () => {
     // closable: isDev ? true:false,
     minimizable: false,
     autoHideMenuBar: false,
-    resizable: true,
+    resizable: isDev ? true : false,
     frame: false,
     show: true,
     webPreferences: {
@@ -182,10 +180,10 @@ const createWarnWindow = () => {
         console.log("Entrada cerrar app");
         let sendQuit = sendInformation(body, true, true);
       }
-      warnWindowChild = null;
-      // mainWindow.destroy();
-      // mainWindow.close();
-      // mainWindow = null;
+      // warnWindowChild = null;
+      mainWindow.destroy();
+      mainWindow.close();
+      mainWindow = null;
     }
   });
 };
@@ -592,22 +590,22 @@ app.whenReady().then(() => {
         });
       }
 
-      ipcMain.on("close_software", (event, args) => {
-        console.log("Close software");
-        if (killSignal) {
-          (async () => {
-            // softwareToKill
-            await fkill(softwareToKill, { force: "true" });
-            console.log("Killed process");
-          })().catch((err) => {
-            console.log(err);
-          });
-          killSignal = false;
-        }
-      });
+      // ipcMain.on("close_software", (event, args) => {
+      //   console.log("Close software");
+      //   if (killSignal) {
+      //     (async () => {
+      //       // softwareToKill
+      //       await fkill(softwareToKill, { force: "true" });
+      //       console.log("Killed process");
+      //       firstTimeWindow = true;
+      //     })().catch((err) => {
+      //       console.log(err);
+      //     });
+      //     killSignal = false;
+      //   }
+      // });
       firstTimeWindow = false;
     } else {
-      firstTimeWindow = true;
       killSignal = true;
     }
   };
@@ -742,6 +740,28 @@ app.whenReady().then(() => {
       mainWindow.destroy();
     }
   });
+  // var progressBar = new ProgressBar({
+  //   text: "Preparing data...",
+  //   detail: "Wait...",
+  // });
+  // progressBar
+  //   .on("completed", function () {
+  //     console.info(`completed...`);
+  //     progressBar.detail = "Task completed. Exiting...";
+  //   })
+  //   .on("aborted", function () {
+  //     console.info(`aborted...`);
+  //   });
+
+  // // launch a task...
+  // // launchTask();
+
+  // // when task is completed, set the progress bar to completed
+  // // ps: setTimeout is used here just to simulate an interval between
+  // // the start and the end of a task
+  // setTimeout(function () {
+  //   progressBar.setCompleted();
+  // }, 3000);
 });
 app.on("will-quit", () => {
   // Unregister all shortcuts.
@@ -757,13 +777,14 @@ autoUpdater.on("checking-for-update", () => {
 });
 autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
   console.log("Updates aviable");
+
   const dialogOpts = {
     type: "info",
     buttons: ["Ok"],
     title: "Application Update",
     message: process.platform === "win32" ? releaseNotes : releaseName,
     detail:
-      "Una actualización de la aplicación se está descargando y es necesaria para el uso correcto de la aplicación. Una vez terminada la descarga la apliación se reiniciará.",
+      "Una actualización de la aplicación se está descargando y es necesaria para el uso correcto de la aplicación (Se recomienda esperar). Una vez terminada la descarga la apliación se reiniciará.",
   };
   dialog.showMessageBox(dialogOpts, (response) => {});
 });
@@ -779,9 +800,11 @@ autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
     detail:
       "A new version has been downloaded. The application will be restarted.",
   };
-  setTimeout(() => {
-    autoUpdater.quitAndInstall();
-  }, 2000);
+  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    setTimeout(() => {
+      autoUpdater.quitAndInstall();
+    }, 1000);
+  });
   // dialog.showMessageBox(dialogOpts).then((returnValue) => {
   // if (returnValue.response === 0)
   // });
