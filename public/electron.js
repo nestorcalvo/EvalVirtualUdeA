@@ -45,7 +45,7 @@
 // global.warnWindow_open = false;
 // require("regenerator-runtime/runtime");
 
-const { app, BrowserWindow, ipcRenderer, screen } = require("electron");
+const { app, BrowserWindow, Menu, ipcRenderer, screen } = require("electron");
 const path = require("path");
 const os = require("os");
 const url = require("url");
@@ -96,6 +96,44 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+const isMac = process.platform === "darwin";
+
+const template = [
+  // { role: 'appMenu' }
+  ...(isMac
+    ? [
+        {
+          label: app.name,
+          submenu: [
+            { role: "about" },
+            { type: "separator" },
+            { role: "services" },
+            { type: "separator" },
+            { role: "hide" },
+            { role: "hideOthers" },
+            { role: "unhide" },
+            { type: "separator" },
+            { role: "quit" },
+          ],
+        },
+      ]
+    : []),
+  // { role: 'fileMenu' }
+  {
+    label: "File",
+    submenu: [isMac ? { role: "close" } : { role: "quit" }],
+  },
+
+  // { role: 'viewMenu' }
+  {
+    label: "View",
+    submenu: [{ role: "reload" }, { role: "forceReload" }],
+  },
+];
+
+const menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);
+
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -119,7 +157,8 @@ const createWindow = () => {
   console.log("Dir name", __dirname);
   mainWindow.setFullScreen(isDev ? false : true);
   mainWindow.openDevTools();
-  mainWindow.removeMenu();
+  // mainWindow.removeMenu();
+
   //mainWindow.setAlwaysOnTop(isDev ? false : true, "screen-saver");
   mainWindow.setVisibleOnAllWorkspaces(false);
   const logintUrl = isDev
@@ -195,7 +234,7 @@ app.whenReady().then(() => {
     const request = net.request({
       method: "POST",
       protocol: "https:",
-      hostname: "biometria-api-develop.udea.edu.co/admissionExam/evalUdea",
+      hostname: "biometria-api.udea.edu.co/admissionExam/evalUdea",
       path: "/sendWarnings",
     });
     request.setHeader(
@@ -445,14 +484,14 @@ app.whenReady().then(() => {
       // Kills a process based on filename of the exe and all child processes
       exec(`taskkill /im ${remoteSoftware[0]} /t`, (err, stdout, stderr) => {
         if (err) {
-          throw err
+          throw err;
         }
 
-        console.log('stdout', stdout)
-        console.log('stderr', err)
-      })
-      })
+        console.log("stdout", stdout);
+        console.log("stderr", err);
+      });
     }
+
     // if (firstTimeWindow && remoteSoftware) {
     //   // if(!warnWindowChild){
     //   createWarnWindow();
@@ -675,9 +714,9 @@ app.whenReady().then(() => {
   });
   mainWindow.once("ready-to-show", () => {
     console.log("Apertura de checkeo");
-    timerSoftwareSupicious = setIntervalAsync(checkRemoteSoftware, 1000);
-    timerExtraScreens = setIntervalAsync(getScreenInfo, 1000);
-    // timerExtraWebcam = setIntervalAsync(getWebcamInfo, 1000);
+    //timerSoftwareSupicious = setIntervalAsync(checkRemoteSoftware, 1000);
+    //timerExtraScreens = setIntervalAsync(getScreenInfo, 1000);
+    //timerExtraWebcam = setIntervalAsync(getWebcamInfo, 1000);
   });
   mainWindow.on("close", () => {
     console.log("Mainwindow is about to be closed");
