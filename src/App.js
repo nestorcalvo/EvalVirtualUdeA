@@ -14,20 +14,20 @@ import WrongCohort from "./pages/WrongCohort/WrongCohort";
 const App = () => {
   const { dispatch } = useStore();
 
-  const { verifyExternalDisplay } = useScreenActions(dispatch);
-  const { verifyRemoteAccessSoftware } = useRemoteSoftwareActions(dispatch);
-  const initialTrackingValues = useRef({
-    callVerifyExternalDisplay: verifyExternalDisplay,
-    callVerifyRemoteAccessSoftware: verifyRemoteAccessSoftware,
-  });
-  useEffect(() => {
-    const { callVerifyExternalDisplay } = initialTrackingValues.current;
-    callVerifyExternalDisplay();
-  }, []);
-  useEffect(() => {
-    const { callVerifyRemoteAccessSoftware } = initialTrackingValues.current;
-    callVerifyRemoteAccessSoftware();
-  }, []);
+  // const { verifyExternalDisplay } = useScreenActions(dispatch);
+  // const { verifyRemoteAccessSoftware } = useRemoteSoftwareActions(dispatch);
+  // const initialTrackingValues = useRef({
+  //   callVerifyExternalDisplay: verifyExternalDisplay,
+  //   callVerifyRemoteAccessSoftware: verifyRemoteAccessSoftware,
+  // });
+  // useEffect(() => {
+  //   const { callVerifyExternalDisplay } = initialTrackingValues.current;
+  //   callVerifyExternalDisplay();
+  // }, []);
+  // useEffect(() => {
+  //   const { callVerifyRemoteAccessSoftware } = initialTrackingValues.current;
+  //   callVerifyRemoteAccessSoftware();
+  // }, []);
 
   return (
     <>

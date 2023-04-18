@@ -19,7 +19,7 @@
             "node_modules"
         ],
         "directories": {
-            "buildResources":"public"
+            "buildResources": "public"
         },
         "win": {
             "icon": "public/icons/png/notas.png",
@@ -40,8 +40,8 @@
     },
     "main": "public/electron.js",
     "name": "evalvirtual-udea",
-    "productName": "EvalVirtualUdea 2023v1",
-    "version": "3.1.0",
+    "productName": "EvalVirtualUdea 2023v2 Dev_test",
+    "version": "0.2.0",
     "private": true,
     "files": [
         "*.js",
@@ -80,13 +80,13 @@
         "node-powershell": "^4.0.0",
         "node-powershellcore": "^1.0.0",
         "powershell": "2.3.2",
-        "ps-list": "^7.2.0",
+        "ps-list": "7.2.0",
         "react": "^17.0.2",
         "react-countdown": "^2.3.2",
         "react-dom": "^16.13.1",
         "react-icons": "^3.10.0",
         "react-router-dom": "^5.2.0",
-        "react-scripts": "3.4.1",
+        "react-scripts": "^5.0.1",
         "react-webcam": "^5.2.0",
         "set-interval-async": "1.0.34",
         "standard": "^14.3.4",
@@ -106,7 +106,7 @@
         "release": "yarn react-build && electron-builder --publish=always",
         "build": "yarn react-build && yarn electron-build",
         "build:publish": "react-scripts build && electron-builder --publish always",
-        "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron --trace-warnings .\""
+        "start": "concurrently -r \"cross-env BROWSER=none yarn react-start \" \"wait-on http://localhost:3000 && electron --trace-warnings .\""
     },
     "browserslist": {
         "production": [
@@ -123,7 +123,7 @@
     "devDependencies": {
         "concurrently": "^5.2.0",
         "cross-env": "^7.0.2",
-        "electron": "^12.0.8",
+        "electron": "22.3.6",
         "electron-builder": "^22.7.0",
         "foreman": "^3.0.1",
         "getpid": "0.0.1",

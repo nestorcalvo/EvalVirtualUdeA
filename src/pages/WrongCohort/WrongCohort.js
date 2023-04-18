@@ -6,7 +6,7 @@ export default function WrongCohort() {
   let countdownValue = 10; //Valor en segundos
   const closeWindow = () => {
     console.log("Cerrar ventana");
-    window.close();
+    window.electron.closeWindow();
   };
   return (
     <div>

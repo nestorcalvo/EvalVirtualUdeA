@@ -1,68 +1,80 @@
-import React, { useState } from 'react'
-import { LoginForm } from '../LoginForm'
-import { useStore } from '../../store/storeContext'
-import { useAuthActions } from '../../actions/authActions'
-import { RememberDataPoliciesContent, RememberDataPoliciesWrapper } from './styles'
-import { SET_PERSON_ID } from '../../actions/types/electronTypes'
-import { useElectronActions } from '../../actions/electronActions'
-import { COHORT_NUMBER } from '../../utils/constantes'
-const ipcRenderer = window.require('electron').ipcRenderer
+import React, { useState } from "react";
+import { LoginForm } from "../LoginForm";
+import { useStore } from "../../store/storeContext";
+import { useAuthActions } from "../../actions/authActions";
+import {
+  RememberDataPoliciesContent,
+  RememberDataPoliciesWrapper,
+} from "./styles";
+import { SET_PERSON_ID } from "../../actions/types/electronTypes";
+import { useElectronActions } from "../../actions/electronActions";
+import { COHORT } from "../../utils/constantes";
+const ipcRenderer = window.require("electron").ipcRenderer;
 
 export const Login = () => {
-  let identification_ = null
-  let password_ = null
+  let identification_ = null;
+  let password_ = null;
   const {
-    state: { auth: { loading, error} },
-    dispatch
-  } = useStore()
+    state: {
+      auth: { loading, error },
+    },
+    dispatch,
+  } = useStore();
 
-  const { login, sendProcesses, sendQuit } = useAuthActions(dispatch)
-  const [isTermsOpened, setIsTermsOpened] = useState(false)
-  const { sendElectron } = useElectronActions(dispatch)
+  const { login, sendProcesses, sendQuit } = useAuthActions(dispatch);
+  const [isTermsOpened, setIsTermsOpened] = useState(false);
+  const { sendElectron } = useElectronActions(dispatch);
   const handleSubmit = (dataForm) => {
-    const identification = dataForm.identification
+    const identification = dataForm.identification;
     // const date = new Date()
-    const password = dataForm.password
+    const password = dataForm.password;
 
-    sendElectron({ type: SET_PERSON_ID, response: identification })
-    console.log("Intento de inicio de sesión")
+    sendElectron({ type: SET_PERSON_ID, response: identification });
+    console.log("Intento de inicio de sesión");
     login({
       // Se debe enviar el usuario y la contraseña
       identification: identification,
       password: password,
       // date: date,
-      id_admission: String(COHORT_NUMBER)
-    })
-  }
+      id_admission: String(COHORT),
+    });
+  };
   const sendActiveProcesses = async () => {
-    await sendProcesses({ identification: identification_, date: new Date() })
-  }
+    await sendProcesses({ identification: identification_, date: new Date() });
+  };
   const switchModal = () => {
-    setIsTermsOpened(!isTermsOpened)
-  }
+    setIsTermsOpened(!isTermsOpened);
+  };
   const fillRememberDataPolicies = () => (
     <RememberDataPoliciesWrapper onClick={switchModal}>
       <RememberDataPoliciesContent>
-        <b><u> Ingresar información incorrecta en este campo será causal de anulación del examen</u></b>
+        <b>
+          <u>
+            {" "}
+            Ingresar información incorrecta en este campo será causal de
+            anulación del examen
+          </u>
+        </b>
         <br />
         <br />
         <br />
-        Recuerde que al iniciar sesión usted ha aceptado previamiente los <u>términos y condiciones</u>
+        Recuerde que al iniciar sesión usted ha aceptado previamiente los{" "}
+        <u>términos y condiciones</u>
       </RememberDataPoliciesContent>
     </RememberDataPoliciesWrapper>
-  )
+  );
   const fillContent = () => (
     <>
       <LoginForm
         onSubmit={handleSubmit}
-        title='Login'
+        title="Login"
         loading={loading}
         error={error}
       />
       {fillRememberDataPolicies()}
       {/* <TermsModal isOpen={isTermsOpened} switchModal={switchModal} /> */}
     </>
-  )
+  );
 
-  return fillContent()
-}
+  return fillContent();
+};
